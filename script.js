@@ -73,85 +73,253 @@ loadPrayers();
 // Refresh when Malaysia's calendar day changes, even if the page stays open.
 setInterval(()=>{if(todayMY() !== (window.__lastPrayerDay || (window.__lastPrayerDay=todayMY()))){window.__lastPrayerDay=todayMY();loadPrayers();}},60000);
 
-// ============================================================
-// Model annotations
-// Hotspots are intentionally hidden until placed on your GLB.
-// Use the 'Place labels' button to pick actual points in developer mode.
-// ============================================================
-const ANNOTATIONS = {
-  entrance: {
-    title: 'Main entrance',
-    description: 'Replace this with verified information about the mosque entrance.'
-  },
-  roof: {
-    title: 'Roof details',
-    description: 'Describe the roof structure and its architectural features here.'
-  },
-  hall: {
-    title: 'Prayer hall',
-    description: 'Add information about the prayer hall and its layout here.'
+// // ============================================================
+// // Model annotations
+// // Hotspots are intentionally hidden until placed on your GLB.
+// // Use the 'Place labels' button to pick actual points in developer mode.
+// // ============================================================
+// const ANNOTATIONS = {
+//   entrance: {
+//     title: 'Main entrance',
+//     description: 'Replace this with verified information about the mosque entrance.'
+//   },
+//   roof: {
+//     title: 'Roof details',
+//     description: 'Describe the roof structure and its architectural features here.'
+//   },
+//   hall: {
+//     title: 'Prayer hall',
+//     description: 'Add information about the prayer hall and its layout here.'
+//   }
+// };
+
+// const annotationPanel = document.querySelector('#annotation-detail');
+// const hotspotButtons = [...document.querySelectorAll('.hotspot')];
+
+// // Developer tool: pick a visible surface to obtain accurate model-space coordinates.
+// // Click 'Place labels', then click the mosque. Copy the logged position and normal
+// // into the matching hotspot in index.html, then remove its `hidden` attribute.
+// let isPickingHotspot = false;
+// const pickButton = document.querySelector('#pick-hotspots');
+
+// pickButton.addEventListener('click', () => {
+//   isPickingHotspot = !isPickingHotspot;
+//   pickButton.setAttribute('aria-pressed', String(isPickingHotspot));
+//   pickButton.textContent = isPickingHotspot ? '✓ Picking (click model)' : '⌖ Place labels';
+//   model.autoRotate = !isPickingHotspot;
+// });
+
+// model.addEventListener('click', (event) => {
+//   if (!isPickingHotspot || event.target.closest?.('.hotspot')) return;
+//   const bounds = model.getBoundingClientRect();
+//   const point = model.positionAndNormalFromPoint(
+//     event.clientX - bounds.left,
+//     event.clientY - bounds.top
+//   );
+//   if (!point) return;
+
+//   const toMeters = (n) => `${n.toFixed(3)}m`;
+//   const position = [point.position.x, point.position.y, point.position.z]
+//     .map(toMeters).join(' ');
+//   const normal = [point.normal.x, point.normal.y, point.normal.z]
+//     .map(toMeters).join(' ');
+//   console.info('Hotspot coordinates:', { position, normal });
+//   window.alert(`Copy into your hotspot in index.html:\ndata-position=\"${position}\"\ndata-normal=\"${normal}\"`);
+// });
+
+// hotspotButtons.forEach((button) => {
+//   button.addEventListener('click', () => {
+//     const annotation = ANNOTATIONS[button.dataset.annotation];
+//     if (!annotation) return;
+
+//     document.querySelector('#annotation-title').textContent = annotation.title;
+//     document.querySelector('#annotation-text').textContent = annotation.description;
+//     annotationPanel.hidden = false;
+//     model.autoRotate = false; // Keep the selected point in view.
+//   });
+// });
+
+// document.querySelector('#close-annotation').addEventListener('click', () => {
+//   annotationPanel.hidden = true;
+//   model.autoRotate = true;
+// });
+
+// document.querySelector('#toggle-annotations').addEventListener('click', (event) => {
+//   const button = event.currentTarget;
+//   const showing = button.getAttribute('aria-pressed') === 'true';
+//   hotspotButtons.forEach((hotspot) => { hotspot.hidden = showing; });
+//   button.setAttribute('aria-pressed', String(!showing));
+//   button.textContent = showing ? '◎ Show labels' : '◎ Hide labels';
+//   if (showing) annotationPanel.hidden = true;
+// });
+
+
+/* =========================================================
+   MODEL-VIEWER ANNOTATION PLACEMENT TOOL
+   ========================================================= */
+
+function initializeAnnotationPlacement() {
+  const model = document.querySelector("#mosqueModel");
+  const toggleButton = document.querySelector("#togglePlacement");
+  const output = document.querySelector("#placementOutput");
+  const positionInput = document.querySelector("#annotationPosition");
+  const normalInput = document.querySelector("#annotationNormal");
+  const copyButton = document.querySelector("#copyAnnotation");
+
+  if (!model || !toggleButton || !output) {
+    console.warn("Annotation placement elements not found.");
+    return;
   }
-};
 
-const annotationPanel = document.querySelector('#annotation-detail');
-const hotspotButtons = [...document.querySelectorAll('.hotspot')];
+  let isPlacementMode = false;
+  let latestAnnotationHTML = "";
+  let previewHotspot = null;
 
-// Developer tool: pick a visible surface to obtain accurate model-space coordinates.
-// Click 'Place labels', then click the mosque. Copy the logged position and normal
-// into the matching hotspot in index.html, then remove its `hidden` attribute.
-let isPickingHotspot = false;
-const pickButton = document.querySelector('#pick-hotspots');
+  // Convert a model-viewer Vector3 into a hotspot string.
+  function formatVector(vector) {
+    return `${vector.x.toFixed(4)}m ${vector.y.toFixed(4)}m ${vector.z.toFixed(4)}m`;
+  }
 
-pickButton.addEventListener('click', () => {
-  isPickingHotspot = !isPickingHotspot;
-  pickButton.setAttribute('aria-pressed', String(isPickingHotspot));
-  pickButton.textContent = isPickingHotspot ? '✓ Picking (click model)' : '⌖ Place labels';
-  model.autoRotate = !isPickingHotspot;
-});
+  // Create a temporary hotspot inside model-viewer.
+  function createPreviewHotspot() {
+    const hotspot = document.createElement("button");
 
-model.addEventListener('click', (event) => {
-  if (!isPickingHotspot || event.target.closest?.('.hotspot')) return;
-  const bounds = model.getBoundingClientRect();
-  const point = model.positionAndNormalFromPoint(
-    event.clientX - bounds.left,
-    event.clientY - bounds.top
-  );
-  if (!point) return;
+    hotspot.type = "button";
+    hotspot.slot = "hotspot-preview";
+    hotspot.className = "hotspot preview-hotspot";
+    hotspot.setAttribute("aria-label", "Annotation preview");
 
-  const toMeters = (n) => `${n.toFixed(3)}m`;
-  const position = [point.position.x, point.position.y, point.position.z]
-    .map(toMeters).join(' ');
-  const normal = [point.normal.x, point.normal.y, point.normal.z]
-    .map(toMeters).join(' ');
-  console.info('Hotspot coordinates:', { position, normal });
-  window.alert(`Copy into your hotspot in index.html:\ndata-position=\"${position}\"\ndata-normal=\"${normal}\"`);
-});
+    hotspot.innerHTML = `
+      <span class="hotspot-pin">+</span>
+      <span class="hotspot-label">New annotation</span>
+    `;
 
-hotspotButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    const annotation = ANNOTATIONS[button.dataset.annotation];
-    if (!annotation) return;
+    model.appendChild(hotspot);
+    return hotspot;
+  }
 
-    document.querySelector('#annotation-title').textContent = annotation.title;
-    document.querySelector('#annotation-text').textContent = annotation.description;
-    annotationPanel.hidden = false;
-    model.autoRotate = false; // Keep the selected point in view.
+  // Enable or disable annotation placement.
+  function setPlacementMode(enabled) {
+    isPlacementMode = enabled;
+
+    toggleButton.classList.toggle("active", enabled);
+    toggleButton.setAttribute("aria-pressed", String(enabled));
+    toggleButton.textContent = enabled
+      ? "✕ Exit Placement"
+      : "📍 Place Labels";
+
+    model.classList.toggle("placement-mode", enabled);
+
+    // Stop model rotation while selecting geometry.
+    if (enabled) {
+      model.autoRotate = false;
+      model.removeAttribute("camera-controls");
+      output.hidden = false;
+    } else {
+      model.autoRotate = true;
+      model.setAttribute("camera-controls", "");
+      output.hidden = true;
+
+      if (previewHotspot) {
+        previewHotspot.remove();
+        previewHotspot = null;
+      }
+    }
+  }
+
+  toggleButton.addEventListener("click", () => {
+    setPlacementMode(!isPlacementMode);
   });
-});
 
-document.querySelector('#close-annotation').addEventListener('click', () => {
-  annotationPanel.hidden = true;
-  model.autoRotate = true;
-});
+  // Raycast against the GLB when the user clicks.
+  model.addEventListener("click", (event) => {
+    if (!isPlacementMode) return;
 
-document.querySelector('#toggle-annotations').addEventListener('click', (event) => {
-  const button = event.currentTarget;
-  const showing = button.getAttribute('aria-pressed') === 'true';
-  hotspotButtons.forEach((hotspot) => { hotspot.hidden = showing; });
-  button.setAttribute('aria-pressed', String(!showing));
-  button.textContent = showing ? '◎ Show labels' : '◎ Hide labels';
-  if (showing) annotationPanel.hidden = true;
-});
+    // Ignore clicks on existing hotspots.
+    if (event.target.closest?.("[slot^='hotspot-']")) {
+      return;
+    }
+
+    if (!model.loaded) {
+      console.warn("The 3D model has not finished loading.");
+      return;
+    }
+
+    const rect = model.getBoundingClientRect();
+
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const hit = model.positionAndNormalFromPoint(x, y);
+
+    if (!hit) {
+      console.info("No mesh was detected at this position.");
+      return;
+    }
+
+    const position = formatVector(hit.position);
+    const normal = formatVector(hit.normal);
+
+    positionInput.value = position;
+    normalInput.value = normal;
+
+    if (!previewHotspot) {
+      previewHotspot = createPreviewHotspot();
+    }
+
+    previewHotspot.dataset.position = position;
+    previewHotspot.dataset.normal = normal;
+
+    latestAnnotationHTML = `
+<button
+  class="hotspot"
+  slot="hotspot-custom"
+  data-position="${position}"
+  data-normal="${normal}"
+  data-annotation="custom"
+>
+  <span class="hotspot-pin">+</span>
+  <span class="hotspot-label">New annotation</span>
+</button>`.trim();
+
+    console.log("Annotation position:", position);
+    console.log("Annotation normal:", normal);
+  });
+
+  // Copy generated hotspot HTML.
+  copyButton.addEventListener("click", async () => {
+    if (!latestAnnotationHTML) {
+      alert("Click a part of the mosque first.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(latestAnnotationHTML);
+
+      const previousText = copyButton.textContent;
+      copyButton.textContent = "✓ Copied!";
+
+      setTimeout(() => {
+        copyButton.textContent = previousText;
+      }, 1500);
+    } catch (error) {
+      console.error("Clipboard failed:", error);
+      alert("Unable to copy. Check clipboard permissions.");
+    }
+  });
+}
+
+// Initialize once the HTML document is ready.
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeAnnotationPlacement
+  );
+} else {
+  initializeAnnotationPlacement();
+}
+
+
 
 // ============================================================
 // About section photo carousel

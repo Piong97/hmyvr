@@ -161,6 +161,36 @@
         </div>
        </div>
       </model-viewer>
+      <!-- Annotation placement controls -->
+<div class="annotation-editor">
+  <button
+    type="button"
+    id="togglePlacement"
+    class="placement-button"
+    aria-pressed="false"
+  >
+    <span>📍</span>
+    Place Labels
+  </button>
+
+  <div id="placementOutput" class="placement-output" hidden>
+    <div class="placement-output-header">
+      <strong>Annotation Coordinates</strong>
+      <span>Click anywhere on the mosque</span>
+    </div>
+
+    <label for="annotationPosition">Position</label>
+    <input id="annotationPosition" readonly />
+
+    <label for="annotationNormal">Normal</label>
+    <input id="annotationNormal" readonly />
+
+    <button type="button" id="copyAnnotation">
+      Copy Hotspot HTML
+    </button>
+  </div>
+</div>
+
       <div class="model-error" hidden="" id="model-error">
        Model not found yet. Add your GLB file at
        <code>
