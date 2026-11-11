@@ -1195,3 +1195,69 @@ model-viewer:not(:defined) > * {
         font-size: 10px;
     }
 }
+
+
+/* ===== Mobile header logo alignment ===== */
+@media (max-width: 650px) {
+    .site-header .nav {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        column-gap: 10px;
+    }
+
+    /* VR logo on the left */
+    .site-header .brand {
+        grid-column: 1;
+    }
+
+    /* Allow company logo and menu to occupy separate grid cells */
+    .site-header .nav-actions {
+        display: contents;
+    }
+
+    /* Company logo beside VR logo */
+    .site-header .project-logo {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    /* Hamburger stays on the far right */
+    .site-header .menu-toggle {
+        grid-column: 3;
+        justify-self: end;
+    }
+}
+
+
+/* ===== AR Cam page ===== */
+.ar-hero{background:radial-gradient(ellipse at 80% 10%,#245044 0%,transparent 55%),#0c2724;color:#fff;padding:68px 0 76px;min-height:70vh}
+    .ar-heading{max-width:770px;margin:0 auto 36px;text-align:center}
+    .ar-heading h1{font-size:clamp(35px,5vw,58px);margin:16px 0}
+    .ar-heading p{color:#b9c9c2;font-size:14px;line-height:1.8}
+    .ar-choices[hidden]{display:none!important}
+    .ar-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:900px;margin:0 auto}
+    .ar-choice{border:1px solid #d7b77745;border-radius:15px;background:#ffffff09;padding:28px;display:flex;flex-direction:column;gap:13px;align-items:flex-start;color:#fff;text-align:left;transition:border-color .2s,background .2s}
+    .ar-choice:hover,.ar-choice:focus-visible{border-color:#d7b777;background:#ffffff12}
+    .ar-choice-icon{display:grid;place-items:center;width:49px;height:49px;border-radius:12px;background:#d7b77720;color:#e6c787;font-size:27px}
+    .ar-choice strong{font:500 26px 'Playfair Display',Georgia,serif}
+    .ar-choice p{font-size:13px;line-height:1.7;color:#c0cfc7;margin:0;flex:1}
+    .ar-choice .ar-go{color:#e6c787;font-size:12px;font-weight:700;margin-top:8px}
+    .ar-workspace{max-width:960px;margin:30px auto 0;border:1px solid #d7b77745;border-radius:15px;background:#0a201e;overflow:hidden}
+    .ar-workspace[hidden],.ar-stage[hidden]{display:none!important}
+    .ar-workspace-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid #ffffff20}
+    .ar-workspace-top strong{font-size:13px;color:#e6c787}
+    .ar-back{border:1px solid #d7b77770;border-radius:8px;background:transparent;color:#e6c787;padding:9px 12px;font-size:12px}
+    .ar-stage{position:relative;width:100%;height:min(66vh,550px);min-height:330px;overflow:hidden;background:linear-gradient(145deg,#36564f,#102720)}
+    .ar-stage model-viewer{display:block;width:100%;height:100%;--poster-color:transparent}
+    .ar-stage a-scene{width:100%!important;height:100%!important;position:absolute!important;inset:0}
+    .ar-stage video{max-width:none}
+    .ar-stage .a-enter-vr,.ar-stage .a-enter-ar{display:none!important}
+    .ar-stage .ar-button{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);border:0;border-radius:9px;background:#d7b777;color:#0b231f;padding:13px 22px;font-weight:700;white-space:nowrap}
+    .ar-status{padding:14px 18px;color:#b9c9c2;font-size:12px;line-height:1.7}
+    .ar-status a{color:#e6c787;text-decoration:underline}
+    .ar-notes{max-width:900px;margin:28px auto 0;text-align:center;color:#9db2a8;font-size:12px;line-height:1.8}
+    @media(max-width:650px){.ar-hero{padding:44px 0 55px}.ar-choices{grid-template-columns:1fr}.ar-choice{padding:21px}.ar-stage{height:55vh;min-height:300px}.ar-workspace-top{padding:12px}.ar-heading h1{font-size:38px}}
+    .ar-eyebrow{justify-content:center}
+    .ar-marker-link{color:#e6c787;text-decoration:underline}
+

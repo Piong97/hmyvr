@@ -1,1 +1,57 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AR Cam | Haji Mohammad Yassin – VR</title><link rel="stylesheet" href="styles.css"></head><body><main class="hero" style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:32px"><div><div class="eyebrow" style="justify-content:center">COMING SOON</div><h1>Augmented <em>Reality</em></h1><p>The AR Cam experience will be built in the next phase.</p><a class="btn btn-gold" href="index.html">← Back to Home</a></div></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#0c2724" name="theme-color"/>
+<meta content="Experience Haji Mohammad Yassin Mosque in augmented reality with marker tracking or surface placement." name="description"/>
+<title>AR Cam | Haji Mohammad Yassin VR</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="styles.css" rel="stylesheet"/>
+<script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js" type="module"></script>
+
+<script defer src="ar-cam.js"></script></head>
+<body>
+<header class="site-header">
+<div class="shell nav">
+<a aria-label="Haji Mohammad Yassin VR home" class="brand" href="index.html">
+<span class="logo-frame"><img alt="VR logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_vr.png"/><span class="logo-fallback" hidden="">HMY-VR</span></span>
+<span class="brand-copy"><strong>HAJI MOHAMMAD YASSIN</strong><small>VIRTUAL MOSQUE EXPERIENCE</small></span>
+</a>
+<nav aria-label="Main navigation" class="primary-nav" id="primary-nav">
+<a href="index.html">Home</a><a href="gallery.html">Gallery</a><a aria-current="page" class="active" href="ar-cam.html">AR Cam</a>
+</nav>
+<div class="nav-actions">
+<span class="project-logo"><img alt="Company logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_company.png"/><span hidden="">Warisan XR Studio</span></span>
+<button aria-controls="primary-nav" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></button>
+</div>
+</div>
+</header>
+<main>
+<section class="ar-hero">
+<div class="shell">
+<div class="ar-heading"><div class="eyebrow ar-eyebrow">A NEW WAY TO EXPLORE HERITAGE</div><h1>Explore the mosque <em>in AR.</em></h1><p>Choose how to experience Haji Mohammad Yassin Mosque in your surroundings. Use a printed marker or place a miniature model on a real surface.</p></div>
+<div class="ar-choices" id="ar-choices">
+<button class="ar-choice" data-mode="marker" type="button"><span aria-hidden="true" class="ar-choice-icon">▣</span><strong>Marker AR</strong><p>Point your camera at a printed Hiro marker. The mosque appears anchored to the marker using AR.js and A-Frame.</p><span class="ar-go">Launch marker camera ↗</span></button>
+<button class="ar-choice" data-mode="surface" type="button"><span aria-hidden="true" class="ar-choice-icon">⌗</span><strong>Surface AR</strong><p>Preview the mosque in 3D, then place it on a table or floor using your device's supported AR viewer.</p><span class="ar-go">Open surface experience ↗</span></button>
+</div>
+<div class="ar-workspace" hidden="" id="ar-workspace">
+<div class="ar-workspace-top"><strong id="ar-mode-title">AR Experience</strong><button class="ar-back" id="ar-back" type="button">← Change mode</button></div>
+<div class="ar-stage" hidden="" id="marker-stage"></div>
+<div class="ar-stage" hidden="" id="surface-stage">
+<model-viewer alt="3D mosque ready for augmented reality" ar="" ar-modes="webxr scene-viewer quick-look" ar-placement="floor" ar-scale="auto" auto-rotate="" camera-controls="" environment-image="neutral" exposure="0.85" id="ar-model" loading="lazy" shadow-intensity="0.9" src="models/mosque.glb">
+<button class="ar-button" slot="ar-button" type="button">View Mosque in AR</button>
+</model-viewer>
+</div>
+<div class="ar-status" id="ar-status" role="status"></div>
+</div>
+<p class="ar-notes">For marker AR, use the <a class="ar-marker-link" href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" rel="noopener noreferrer" target="_blank">Hiro marker</a> on another screen or print it. Camera access requires HTTPS or localhost. Surface AR depends on phone and browser support.</p>
+</div>
+</section>
+</main>
+<footer class="footer"><div class="shell footer-inner"><div><strong>HAJI MOHAMMAD YASSIN — VR</strong><small>A digital heritage experience · Pagoh, Muar</small></div><span>© <span id="year"></span> Haji Mohammad Yassin – VR</span></div></footer>
+
+</body>
+</html>

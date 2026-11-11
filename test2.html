@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c2724">
+  <title>Three.js Mosque Viewer | Haji Mohammad Yassin VR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--deep:#071d1a;--dark:#0c2724;--gold:#d7b777;--cream:#f6f3ec}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);font-family:'DM Sans',sans-serif;color:#17342f}button{font:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+    .site-header{background:var(--deep);color:white;border-bottom:1px solid #ffffff20}.shell{width:min(1100px,calc(100% - 32px));margin:auto}.header-inner{display:flex;align-items:center;gap:15px;min-height:92px}.logo{width:64px;height:64px;object-fit:contain;background:#ffffff10;border-radius:12px;padding:6px}.brand-title{font-size:13px;letter-spacing:1.5px;font-weight:700}.brand-subtitle{font-size:10px;letter-spacing:1.5px;color:#b8c6c0;margin-top:5px}.company-logo{margin-left:auto}
+    main{padding:50px 0 65px}.eyebrow{font-size:11px;letter-spacing:2.4px;font-weight:700;color:#9b7c43}h1{font:500 clamp(32px,4vw,48px) 'Playfair Display',Georgia,serif;margin:10px 0 8px}h1 em{color:#9a7b42}p.intro{font-size:13px;color:#64756c;line-height:1.8;margin:0 0 24px}
+    .viewer-panel{position:relative;overflow:hidden;border-radius:14px;background:linear-gradient(155deg,#294c49,#152e2c 48%,#0b201e);box-shadow:0 22px 65px #0003;color:#fff;border:1px solid #79908150}
+    .viewer-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px}.viewer-kicker{font-size:10px;letter-spacing:1.6px;color:#d3dcd5}.live-pill{font-size:10px;letter-spacing:1px;color:#d9c38f}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:6px}
+    #three-container{height:min(62vw,570px);min-height:340px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#cdb98a35,transparent 55%),linear-gradient(165deg,#36564f,#1a3933 55%,#102720)}
+    #three-container canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+    .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;pointer-events:none;background:#16332eec;color:#f3dfb6;font-size:13px;z-index:3}.loading[hidden]{display:none}.loading strong{font-size:17px}.loading .progress-track{width:min(260px,65%);height:4px;background:#ffffff30;border-radius:8px;overflow:hidden}.loading .progress-fill{width:0;height:100%;background:var(--gold);transition:width .15s}.error{padding:12px 18px;background:#4c2b25;color:#ffdfc8;font-size:12px}.error[hidden]{display:none}
+    .hotspot-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}.hotspot{position:absolute;top:0;left:0;display:flex;flex-direction:column;align-items:center;gap:7px;transform:translate(-50%,-50%);border:0;background:transparent;color:white;pointer-events:auto;white-space:nowrap;padding:4px;z-index:2}.hotspot[hidden]{display:none}.hotspot-pin{display:grid;place-items:center;width:35px;height:35px;border:2px solid #fff;border-radius:50%;background:#d7b477;color:#12372f;font-size:23px;font-weight:700;box-shadow:0 4px 14px #0006}.hotspot-label{padding:7px 10px;background:#0a231fe8;border-radius:7px;font-size:11px;box-shadow:0 3px 16px #0005}.hotspot:hover .hotspot-pin{background:#f4d597}
+    .annotation-detail{position:absolute;left:20px;right:20px;bottom:125px;z-index:5;padding:18px 45px 18px 20px;background:#08201df2;border:1px solid #e1bd7866;border-radius:12px;backdrop-filter:blur(12px)}.annotation-detail[hidden]{display:none}.annotation-detail strong{color:#e1bd78;font-size:14px}.annotation-detail p{font-size:12px;line-height:1.6;color:#d6e1dc;margin:8px 0 0}.close-annotation{position:absolute;right:12px;top:8px;background:none;border:0;color:white;font-size:24px}
+    .viewer-bottom{border-top:1px solid #ffffff20;display:flex;flex-direction:column;align-items:center;gap:14px;padding:18px 16px}.viewer-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;width:100%}.viewer-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 11px;border:1px solid #d7b77738;border-radius:7px;background:#ffffff0a;color:#e4d2a8;font-size:11px;font-weight:600;white-space:nowrap}.viewer-actions button:hover{background:#d7b77724;border-color:var(--gold);color:white}.action-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;font-size:15px}.viewer-hints{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;color:#b5c6bc;font-size:11px}
+    .diagnostics{margin-top:20px;padding:20px 22px;border:1px solid #e3ded2;border-radius:12px;background:white;display:grid;grid-template-columns:1fr 1fr;gap:20px}.diagnostics h2{font-size:14px;margin:0 0 10px}.diagnostics p{font-size:12px;color:#65766c;line-height:1.7;margin:7px 0}.control-line{display:flex;align-items:center;gap:12px}.control-line input{width:100%;accent-color:#947440}.control-line output{font-size:14px;font-weight:700;min-width:50px}.stats{font-size:12px;color:#4e655a;line-height:1.9}.stats code{background:#f4f1e9;padding:2px 5px;border-radius:4px}
+    .viewer-panel:fullscreen{display:flex;flex-direction:column;border-radius:0}.viewer-panel:fullscreen #three-container{flex:1;height:auto;min-height:0}.viewer-panel:fullscreen .annotation-detail{bottom:125px}
+    @media(max-width:650px){.header-inner{min-height:76px}.logo{width:48px;height:48px}.brand-title{font-size:10px}.brand-subtitle{font-size:8px}.company-logo{width:45px;height:45px}main{padding-top:30px}#three-container{height:380px;min-height:0}.viewer-top{padding:14px 12px}.viewer-bottom{padding:14px 12px;gap:12px}.viewer-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.viewer-actions button{width:100%;min-height:40px;font-size:10px;padding:8px 6px}.viewer-hints{font-size:10px;gap:12px}.hotspot-pin{width:26px;height:26px;font-size:17px}.hotspot-label{font-size:9px;padding:5px}.annotation-detail{bottom:142px;left:10px;right:10px}.diagnostics{grid-template-columns:1fr}}
+  </style>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+<header class="site-header"><div class="shell header-inner"><img class="logo" src="assets/logo_vr.png" alt="VR logo"><div><div class="brand-title">HAJI MOHAMMAD YASSIN</div><div class="brand-subtitle">VIRTUAL MOSQUE EXPERIENCE · THREE.JS TEST</div></div><img class="logo company-logo" src="assets/logo_company.png" alt="Company logo"></div></header>
+<main class="shell"><div class="eyebrow">3D RENDERING EXPERIMENT</div><h1>Explore the mosque. <em>With Three.js.</em></h1><p class="intro">A standalone test of your existing mosque GLB, annotations, camera controls, and adjustable near clipping plane.</p>
+<section class="viewer-panel" id="viewer-panel"><div class="viewer-top"><span class="viewer-kicker">INTERACTIVE 3D EXPERIENCE · THREE.JS</span><span class="live-pill"><span class="dot"></span><span id="rotation-status">AUTO ROTATE</span></span></div>
+<div id="three-container" aria-label="Interactive 3D model of Haji Mohammad Yassin Mosque"><div class="hotspot-layer" id="hotspot-layer">
+<button class="hotspot" data-key="entrance" aria-label="Main Entrance"><span class="hotspot-pin">+</span><span class="hotspot-label">Main Entrance</span></button>
+<button class="hotspot" data-key="roof" aria-label="Roof Details"><span class="hotspot-pin">+</span><span class="hotspot-label">Roof Details</span></button>
+<button class="hotspot" data-key="hall" aria-label="Prayer Hall"><span class="hotspot-pin">+</span><span class="hotspot-label">Prayer Hall</span></button>
+</div><div class="loading" id="loading"><strong>Loading mosque model…</strong><span id="loading-text">models/mosque.glb</span><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div></div>
+<div class="error" id="model-error" hidden></div>
+<div class="annotation-detail" id="annotation-detail" hidden><button type="button" class="close-annotation" id="close-annotation" aria-label="Close annotation">×</button><strong id="annotation-title"></strong><p id="annotation-text"></p></div>
+<div class="viewer-bottom"><div class="viewer-actions">
+<button type="button" id="toggle-hotspots" aria-pressed="true"><span class="action-icon" id="hotspots-icon">◉</span><span id="hotspots-text">Hide Hotspots</span></button>
+<button type="button" id="toggle-rotation" aria-pressed="false"><span class="action-icon" id="rotation-icon">⏸</span><span id="rotation-text">Pause rotation</span></button>
+<button type="button" id="reset-camera"><span class="action-icon">↺</span><span>Reset view</span></button>
+<button type="button" id="toggle-fullscreen" aria-pressed="false"><span class="action-icon" id="fullscreen-icon">⛶</span><span id="fullscreen-text">Fullscreen</span></button>
+</div><div class="viewer-hints"><span>↔ Drag to rotate</span><span>⊕ Scroll to zoom</span></div></div></section>
+<section class="diagnostics" aria-label="Camera clipping test"><div><h2>Camera near clipping plane</h2><div class="control-line"><input id="near-slider" type="range" min="0.01" max="5" step="0.01" value="1" aria-label="Near clipping distance"><output id="near-value" for="near-slider">1.00 m</output></div><p>Starts at <strong>1.00 m</strong>, matching your Blender Clip Start test. Move the slider while rotating the mosque to compare flickering. Too large a value may clip nearby surfaces.</p></div><div><h2>Viewer diagnostics</h2><div class="stats">Near: <code id="stat-near">1.00 m</code><br>Far: <code id="stat-far">—</code><br>Model dimensions: <code id="stat-dims">Loading…</code><br>Renderer: <code>Three.js / WebGL</code></div></div></section>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+
+const $ = s => document.querySelector(s);
+const container = $('#three-container');
+const panel = $('#viewer-panel');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 1000);
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 0.85;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+container.insertBefore(renderer.domElement, container.firstChild);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.075;
+controls.enablePan = false;
+controls.minPolarAngle = THREE.MathUtils.degToRad(15);
+controls.maxPolarAngle = THREE.MathUtils.degToRad(90);
+controls.autoRotateSpeed = 2; // 12 degrees per second at OrbitControls' reference frame rate
+controls.autoRotate = true;
+controls.minDistance = 0.01;
+
+// Studio-style lighting, close to the original model-viewer neutral environment.
+scene.add(new THREE.HemisphereLight(0xffffff, 0x52655d, 2.1));
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(60, 110, 80);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xd5e7df, 0.75);
+fill.position.set(-60, 30, -80);
+scene.add(fill);
+
+const ANNOTATIONS = {
+  entrance:{title:'Main Entrance',description:'Explore the main entrance of Haji Mohammad Yassin Mosque.',position:[4.5,-14.5,-4.5]},
+  roof:{title:'Roof and Dome',description:"Discover the mosque's distinctive roof and dome architecture.",position:[-2.38,-10.5,-4.32]},
+  hall:{title:'Prayer Hall',description:"Learn about the mosque's main prayer space.",position:[5,-12.5,-4.32]}
+};
+const hotspotButtons = [...document.querySelectorAll('.hotspot')];
+const hotspotVectors = Object.fromEntries(Object.entries(ANNOTATIONS).map(([k,v])=>[k,new THREE.Vector3(...v.position)]));
+let hotspotsVisible = true;
+let userWantsRotation = true;
+let annotationOpen = false;
+let modelLoaded = false;
+let defaultTarget = new THREE.Vector3();
+let defaultDistance = 30;
+let lastTime = performance.now();
+const temp = new THREE.Vector3();
+
+function syncRotation(){
+  controls.autoRotate = userWantsRotation && !annotationOpen;
+  $('#rotation-icon').textContent = userWantsRotation ? '⏸' : '▶';
+  $('#rotation-text').textContent = userWantsRotation ? 'Pause rotation' : 'Play rotation';
+  $('#toggle-rotation').setAttribute('aria-pressed',String(!userWantsRotation));
+  $('#rotation-status').textContent = controls.autoRotate ? 'AUTO ROTATE' : 'ROTATION PAUSED';
+}
+function setDefaultCamera(){
+  if(!modelLoaded)return;
+  controls.target.copy(defaultTarget);
+  const azimuth=THREE.MathUtils.degToRad(35);
+  const polar=THREE.MathUtils.degToRad(68);
+  const radius=defaultDistance;
+  camera.position.set(defaultTarget.x+radius*Math.sin(polar)*Math.sin(azimuth),defaultTarget.y+radius*Math.cos(polar),defaultTarget.z+radius*Math.sin(polar)*Math.cos(azimuth));
+  camera.lookAt(defaultTarget);
+  controls.update();
+}
+function setNear(value){
+  const near=Math.max(0.01,Number(value));
+  camera.near=near;
+  if(camera.far <= near) camera.far=near+100;
+  camera.updateProjectionMatrix();
+  $('#near-value').textContent=near.toFixed(2)+' m';
+  $('#stat-near').textContent=near.toFixed(2)+' m';
+}
+$('#near-slider').addEventListener('input',e=>setNear(e.target.value));
+$('#toggle-rotation').addEventListener('click',()=>{userWantsRotation=!userWantsRotation;syncRotation();});
+$('#reset-camera').addEventListener('click',setDefaultCamera);
+$('#toggle-hotspots').addEventListener('click',()=>{
+  hotspotsVisible=!hotspotsVisible;
+  $('#hotspots-icon').textContent=hotspotsVisible?'◉':'◎';
+  $('#hotspots-text').textContent=hotspotsVisible?'Hide Hotspots':'Show Hotspots';
+  $('#toggle-hotspots').setAttribute('aria-pressed',String(hotspotsVisible));
+  if(!hotspotsVisible)closeAnnotation();
+});
+function closeAnnotation(){annotationOpen=false;$('#annotation-detail').hidden=true;syncRotation();}
+$('#close-annotation').addEventListener('click',closeAnnotation);
+hotspotButtons.forEach(button=>button.addEventListener('click',()=>{
+  const item=ANNOTATIONS[button.dataset.key];
+  $('#annotation-title').textContent=item.title;
+  $('#annotation-text').textContent=item.description;
+  $('#annotation-detail').hidden=false;
+  annotationOpen=true;
+  syncRotation();
+}));
+$('#toggle-fullscreen').addEventListener('click',async()=>{
+  try{if(document.fullscreenElement===panel)await document.exitFullscreen();else await panel.requestFullscreen();}
+  catch(err){console.warn(err);}
+});
+document.addEventListener('fullscreenchange',()=>{
+  const active=document.fullscreenElement===panel;
+  $('#fullscreen-icon').textContent=active?'⤢':'⛶';
+  $('#fullscreen-text').textContent=active?'Exit fullscreen':'Fullscreen';
+  $('#toggle-fullscreen').setAttribute('aria-pressed',String(active));
+  requestAnimationFrame(resize);
+});
+
+function resize(){
+  const width=container.clientWidth,height=container.clientHeight;
+  if(!width||!height)return;
+  renderer.setSize(width,height,false);
+  camera.aspect=width/height;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(container);
+resize();
+
+function positionHotspots(){
+  if(!modelLoaded)return;
+  const width=container.clientWidth,height=container.clientHeight;
+  for(const button of hotspotButtons){
+    const world=hotspotVectors[button.dataset.key];
+    temp.copy(world).project(camera);
+    const inFront=temp.z>=-1&&temp.z<=1;
+    const inViewport=temp.x>=-1&&temp.x<=1&&temp.y>=-1&&temp.y<=1;
+    button.hidden=!hotspotsVisible||!inFront||!inViewport;
+    if(!button.hidden){
+      button.style.left=((temp.x+1)*0.5*width)+'px';
+      button.style.top=((1-temp.y)*0.5*height)+'px';
+    }
+  }
+}
+
+const loader=new GLTFLoader();
+loader.load('models/mosque.glb',gltf=>{
+  const model=gltf.scene;
+  scene.add(model);
+  model.traverse(obj=>{if(obj.isMesh){obj.castShadow=false;obj.receiveShadow=false;}});
+  const bounds=new THREE.Box3().setFromObject(model);
+  if(bounds.isEmpty())throw new Error('The GLB has no visible geometry.');
+  const size=bounds.getSize(new THREE.Vector3());
+  const maxDimension=Math.max(size.x,size.y,size.z);
+  bounds.getCenter(defaultTarget);
+  // Preserve the original model-viewer framing approach: maxDimension * 1.5 * 0.82.
+  defaultDistance=maxDimension*1.5*0.82;
+  // Avoid clipping distant geometry, while keeping a large near/far ratio improvement over near=0.01.
+  camera.far=Math.max(100,defaultDistance*5,maxDimension*8);
+  camera.updateProjectionMatrix();
+  controls.maxDistance=Math.max(defaultDistance*3,maxDimension*4);
+  modelLoaded=true;
+  setDefaultCamera();
+  setNear($('#near-slider').value);
+  $('#stat-far').textContent=camera.far.toFixed(1)+' m';
+  $('#stat-dims').textContent=[size.x,size.y,size.z].map(v=>v.toFixed(1)).join(' × ')+' m';
+  $('#loading').hidden=true;
+},event=>{
+  if(event.total){const percent=Math.min(100,Math.round(event.loaded/event.total*100));$('#progress-fill').style.width=percent+'%';$('#loading-text').textContent=percent+'% loaded';}
+},error=>{
+  console.error('GLB loading error:',error);
+  $('#loading').hidden=true;
+  $('#model-error').hidden=false;
+  $('#model-error').textContent='Could not load models/mosque.glb. Keep test2.html beside index.html, ensure models/mosque.glb exists, and run through a local web server (not file://).';
+});
+
+function animate(now){
+  requestAnimationFrame(animate);
+  const delta=Math.min((now-lastTime)/1000,0.1);
+  lastTime=now;
+  if(!document.hidden){controls.update(delta);renderer.render(scene,camera);positionHotspots();}
+}
+setNear(1);
+syncRotation();
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
