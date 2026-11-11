@@ -68,7 +68,125 @@ $('#menu-toggle').addEventListener('click',()=>{const nav=$('#primary-nav');cons
 const model=$('#mosque-model');
 model.addEventListener('error',()=>{ $('#model-error').hidden=false; });
 model.addEventListener('load',()=>{ $('#model-error').hidden=true; });
-$('#reset-camera').addEventListener('click',()=>{ model.cameraOrbit='45deg 65deg auto';model.fieldOfView='auto';model.jumpCameraToGoal(); });
+$('#reset-camera').addEventListener('click',()=>{ model.cameraOrbit='35deg 68deg auto';model.fieldOfView='auto';model.jumpCameraToGoal(); });
 loadPrayers();
 // Refresh when Malaysia's calendar day changes, even if the page stays open.
 setInterval(()=>{if(todayMY() !== (window.__lastPrayerDay || (window.__lastPrayerDay=todayMY()))){window.__lastPrayerDay=todayMY();loadPrayers();}},60000);
+
+// ============================================================
+// Model annotations
+// Hotspots are intentionally hidden until placed on your GLB.
+// Use the 'Place labels' button to pick actual points in developer mode.
+// ============================================================
+const ANNOTATIONS = {
+  entrance: {
+    title: 'Main entrance',
+    description: 'Replace this with verified information about the mosque entrance.'
+  },
+  roof: {
+    title: 'Roof details',
+    description: 'Describe the roof structure and its architectural features here.'
+  },
+  hall: {
+    title: 'Prayer hall',
+    description: 'Add information about the prayer hall and its layout here.'
+  }
+};
+
+const annotationPanel = document.querySelector('#annotation-detail');
+const hotspotButtons = [...document.querySelectorAll('.hotspot')];
+
+// Developer tool: pick a visible surface to obtain accurate model-space coordinates.
+// Click 'Place labels', then click the mosque. Copy the logged position and normal
+// into the matching hotspot in index.html, then remove its `hidden` attribute.
+let isPickingHotspot = false;
+const pickButton = document.querySelector('#pick-hotspots');
+
+pickButton.addEventListener('click', () => {
+  isPickingHotspot = !isPickingHotspot;
+  pickButton.setAttribute('aria-pressed', String(isPickingHotspot));
+  pickButton.textContent = isPickingHotspot ? '✓ Picking (click model)' : '⌖ Place labels';
+  model.autoRotate = !isPickingHotspot;
+});
+
+model.addEventListener('click', (event) => {
+  if (!isPickingHotspot || event.target.closest?.('.hotspot')) return;
+  const bounds = model.getBoundingClientRect();
+  const point = model.positionAndNormalFromPoint(
+    event.clientX - bounds.left,
+    event.clientY - bounds.top
+  );
+  if (!point) return;
+
+  const toMeters = (n) => `${n.toFixed(3)}m`;
+  const position = [point.position.x, point.position.y, point.position.z]
+    .map(toMeters).join(' ');
+  const normal = [point.normal.x, point.normal.y, point.normal.z]
+    .map(toMeters).join(' ');
+  console.info('Hotspot coordinates:', { position, normal });
+  window.alert(`Copy into your hotspot in index.html:\ndata-position=\"${position}\"\ndata-normal=\"${normal}\"`);
+});
+
+hotspotButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const annotation = ANNOTATIONS[button.dataset.annotation];
+    if (!annotation) return;
+
+    document.querySelector('#annotation-title').textContent = annotation.title;
+    document.querySelector('#annotation-text').textContent = annotation.description;
+    annotationPanel.hidden = false;
+    model.autoRotate = false; // Keep the selected point in view.
+  });
+});
+
+document.querySelector('#close-annotation').addEventListener('click', () => {
+  annotationPanel.hidden = true;
+  model.autoRotate = true;
+});
+
+document.querySelector('#toggle-annotations').addEventListener('click', (event) => {
+  const button = event.currentTarget;
+  const showing = button.getAttribute('aria-pressed') === 'true';
+  hotspotButtons.forEach((hotspot) => { hotspot.hidden = showing; });
+  button.setAttribute('aria-pressed', String(!showing));
+  button.textContent = showing ? '◎ Show labels' : '◎ Hide labels';
+  if (showing) annotationPanel.hidden = true;
+});
+
+// ============================================================
+// About section photo carousel
+// Missing images are skipped. Add assets/mosque-1.jpg, etc.
+// ============================================================
+const photoCarousel = document.querySelector('.photo-carousel');
+const photos = [...document.querySelectorAll('.mosque-photo')];
+let photoIndex = 0;
+
+function availablePhotos() {
+  return photos.filter((photo) => photo.complete && photo.naturalWidth > 0);
+}
+
+function showPhoto(index) {
+  const validPhotos = availablePhotos();
+  photos.forEach((photo) => photo.classList.remove('active'));
+
+  if (!validPhotos.length) {
+    photoCarousel.classList.remove('has-photo');
+    document.querySelector('#photo-count').textContent = '00 / 00';
+    return;
+  }
+
+  photoIndex = (index + validPhotos.length) % validPhotos.length;
+  validPhotos[photoIndex].classList.add('active');
+  photoCarousel.classList.add('has-photo');
+  document.querySelector('#photo-count').textContent =
+    `${String(photoIndex + 1).padStart(2, '0')} / ${String(validPhotos.length).padStart(2, '0')}`;
+}
+
+photos.forEach((photo) => {
+  photo.addEventListener('load', () => showPhoto(photoIndex));
+  photo.addEventListener('error', () => showPhoto(photoIndex));
+});
+
+document.querySelector('#photo-prev').addEventListener('click', () => showPhoto(photoIndex - 1));
+document.querySelector('#photo-next').addEventListener('click', () => showPhoto(photoIndex + 1));
+showPhoto(0);
