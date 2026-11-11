@@ -12,8 +12,8 @@ python -m http.server 8000
 Open http://localhost:8000
 
 ## Replace placeholder assets
-- `assets/logo_company.png` — company logo
-- `assets/logo_vr.png` — VR project logo
+- `assets/company-logo.png` — company logo
+- `assets/vr-project-logo.png` — VR project logo
 - `models/mosque.glb` — 3D mosque model for `<model-viewer>`
 
 The website displays text/logo fallbacks when the logos are missing. The 3D viewer displays a poster placeholder until a valid GLB is supplied. Model viewing requires a browser with WebGL and an internet connection to load Google's model-viewer component.
