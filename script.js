@@ -1,360 +1,626 @@
-'use strict';
-const ZONE = 'JHR04'; // Muar / Pagoh, Johor
-const API_URL = `https://api.waktusolat.app/v2/solat/${ZONE}`;
-const TIMEZONE = 'Asia/Kuala_Lumpur';
-const prayers = [ ['fajr','fajr'], ['dhuhr','dhuhr'], ['asr','asr'], ['maghrib','maghrib'], ['isha','isha'] ];
+
+"use strict";
+
+/* ==========================================================
+   HAJI MOHAMMAD YASSIN – VR
+   Homepage JavaScript
+   ========================================================== */
+
 const $ = (selector) => document.querySelector(selector);
-const todayMY = () => new Intl.DateTimeFormat('en-CA',{timeZone:TIMEZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const formatDate = () => new Intl.DateTimeFormat('en-MY',{timeZone:TIMEZONE,weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
-const formatTime = (value) => {
-  if (typeof value === 'number') return new Intl.DateTimeFormat('en-GB',{timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(value * (value > 1e12 ? 1 : 1000)));
-  if (typeof value === 'string') { const match = value.match(/\b(\d{1,2}):(\d{2})\b/); if(match) return `${match[1].padStart(2,'0')}:${match[2]}`; }
-  return '--:--';
+const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+const TIMEZONE = "Asia/Kuala_Lumpur";
+const PRAYER_ZONE = "JHR04";
+const PRAYER_API = `https://api.waktusolat.app/v2/solat/${PRAYER_ZONE}`;
+
+const model = $("#mosque-model");
+
+/* ==========================================================
+   1. NAVIGATION
+   ========================================================== */
+
+function initializeNavigation() {
+  const toggle = $("#menu-toggle");
+  const nav = $("#primary-nav");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  const year = $("#year");
+  if (year) year.textContent = new Date().getFullYear();
+}
+
+/* ==========================================================
+   2. PRAYER TIMES
+   ========================================================== */
+
+const PRAYERS = {
+  fajr: ["fajr", "subuh"],
+  dhuhr: ["dhuhr", "zohor", "zuhr"],
+  asr: ["asr", "asar"],
+  maghrib: ["maghrib"],
+  isha: ["isha", "isyak", "isya"]
 };
-function extractToday(payload, isoDate){
-  const rows = payload.prayers || payload.prayerTime || payload.prayerTimes || payload.data?.prayers || payload.data?.prayerTime || payload.data?.prayerTimes;
-  if(!Array.isArray(rows)) throw new Error('Unexpected API response');
-  const day = Number(isoDate.slice(-2));
-  const match = rows.find(row => {
-    if (typeof row.date === 'number') return row.date === day;
-    if (typeof row.day === 'number') return row.day === day;
-    if (typeof row.date === 'string') {
-      const d = row.date;
-      return d === isoDate || d.startsWith(`${isoDate.slice(0,4)}-${isoDate.slice(5,7)}-${isoDate.slice(8)}`) || d.startsWith(`${String(day).padStart(2,'0')}-`) || d.startsWith(`${String(day).padStart(2,'0')}/`);
+
+function malaysiaDate() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const get = (type) => parts.find(p => p.type === type).value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+function formatPrayerTime(value) {
+  if (typeof value === "number") {
+    return new Intl.DateTimeFormat("en-GB", {
+      timeZone: TIMEZONE,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    }).format(new Date(value * (value > 1e12 ? 1 : 1000)));
+  }
+
+  if (typeof value === "string") {
+    const match = value.match(/(\d{1,2}):(\d{2})/);
+    if (match) return `${match[1].padStart(2, "0")}:${match[2]}`;
+  }
+
+  return "--:--";
+}
+
+function extractToday(payload, date) {
+  const rows =
+    payload.prayers ||
+    payload.prayerTime ||
+    payload.prayerTimes ||
+    payload.data?.prayers ||
+    payload.data?.prayerTime ||
+    payload.data?.prayerTimes;
+
+  if (!Array.isArray(rows)) {
+    throw new Error("Unexpected prayer API response.");
+  }
+
+  const day = Number(date.slice(-2));
+
+  const row = rows.find(item => {
+    if (typeof item.date === "number") return item.date === day;
+    if (typeof item.day === "number") return item.day === day;
+
+    if (typeof item.date === "string") {
+      return (
+        item.date === date ||
+        item.date.startsWith(`${String(day).padStart(2, "0")}-`) ||
+        item.date.startsWith(`${String(day).padStart(2, "0")}/`)
+      );
     }
+
     return false;
   });
-  if (!match) throw new Error('No timetable entry for today');
-  return match;
+
+  if (!row) throw new Error("Today's prayer times not found.");
+  return row;
 }
-function highlightNext(times){
-  document.querySelectorAll('.prayer-card').forEach(card=>card.classList.remove('next'));
-  const now = new Intl.DateTimeFormat('en-GB',{timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
-  const nextIndex = times.findIndex(time => time !== '--:--' && time > now);
-  if(nextIndex >= 0) document.querySelectorAll('.prayer-card')[nextIndex]?.classList.add('next');
+
+function highlightNextPrayer(times) {
+  const cards = $$(".prayer-card");
+  cards.forEach(card => card.classList.remove("next"));
+
+  const now = new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(new Date());
+
+  const next = times.findIndex(time => time > now);
+
+  if (next >= 0) cards[next]?.classList.add("next");
 }
-async function loadPrayers(force=false){
-  const status = $('#prayer-status'); const date = todayMY(); $('#date-label').textContent = formatDate();
-  const cacheKey = `hmy-prayers-${ZONE}-${date}`;
-  status.textContent = 'Fetching prayer times…';
+
+async function loadPrayerTimes(force = false) {
+  const status = $("#prayer-status");
+  const date = malaysiaDate();
+  const cacheKey = `hmy-prayers-${PRAYER_ZONE}-${date}`;
+
+  const dateLabel = $("#date-label");
+  if (dateLabel) {
+    dateLabel.textContent = new Intl.DateTimeFormat("en-MY", {
+      timeZone: TIMEZONE,
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(new Date());
+  }
+
+  if (status) status.textContent = "Fetching prayer times…";
+
   try {
-    let row;
-    if (!force) { try { row = JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch {} }
-    if (!row) {
-      const response = await fetch(`${API_URL}?year=${date.slice(0,4)}&month=${Number(date.slice(5,7))}`,{headers:{Accept:'application/json'},cache:'no-cache'});
-      if(!response.ok) throw new Error(`API returned ${response.status}`);
-      row = extractToday(await response.json(),date);
-      try { localStorage.setItem(cacheKey,JSON.stringify(row)); } catch {}
+    let row = null;
+
+    if (!force) {
+      try {
+        row = JSON.parse(localStorage.getItem(cacheKey) || "null");
+      } catch {
+        // Storage may be unavailable.
+      }
     }
-    const times = prayers.map(([id,key]) => {
-      const aliases = {fajr:['fajr','subuh'],dhuhr:['dhuhr','zohor','zuhr'],asr:['asr','asar'],maghrib:['maghrib'],isha:['isha','isyak','isya']};
-      const value = aliases[key].map(k=>row[k]).find(v=>v!=null);
-      const formatted = formatTime(value);
-      $(`#time-${id}`).textContent = formatted;
-      return formatted;
+
+    if (!row) {
+      const response = await fetch(
+        `${PRAYER_API}?year=${date.slice(0, 4)}&month=${Number(date.slice(5, 7))}`,
+        { cache: "no-cache" }
+      );
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      row = extractToday(await response.json(), date);
+
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(row));
+      } catch {
+        // Continue without caching.
+      }
+    }
+
+    const times = Object.entries(PRAYERS).map(([id, aliases]) => {
+      const value = aliases.map(key => row[key]).find(v => v != null);
+      const time = formatPrayerTime(value);
+
+      const element = $(`#time-${id}`);
+      if (element) element.textContent = time;
+
+      return time;
     });
-    if(times.some(time=>time==='--:--')) throw new Error('Incomplete prayer times');
-    highlightNext(times);
-    status.textContent = 'Source: JAKIM prayer timetable via Waktu Solat API · Malaysia Time (MYT)';
-  } catch(error){
-    prayers.forEach(([id]) => { $(`#time-${id}`).textContent = '--:--'; });
-    status.textContent = 'Prayer times unavailable. Please try Refresh times later.';
-    console.warn('Prayer times:',error);
+
+    if (times.includes("--:--")) {
+      throw new Error("Incomplete prayer timetable.");
+    }
+
+    highlightNextPrayer(times);
+
+    if (status) {
+      status.textContent =
+        "Source: Waktu Solat API · Malaysia Time (MYT)";
+    }
+  } catch (error) {
+    console.error("Prayer times:", error);
+
+    Object.keys(PRAYERS).forEach(id => {
+      const element = $(`#time-${id}`);
+      if (element) element.textContent = "--:--";
+    });
+
+    if (status) {
+      status.textContent =
+        "Prayer times unavailable. Please refresh later.";
+    }
   }
 }
-$('#refresh-prayers').addEventListener('click',()=>loadPrayers(true));
-$('#year').textContent = new Date().getFullYear();
-$('#menu-toggle').addEventListener('click',()=>{const nav=$('#primary-nav');const open=nav.classList.toggle('open');$('#menu-toggle').setAttribute('aria-expanded',String(open));});
-const model=$('#mosque-model');
-model.addEventListener('error',()=>{ $('#model-error').hidden=false; });
-model.addEventListener('load',()=>{ $('#model-error').hidden=true; });
-$('#reset-camera').addEventListener('click',()=>{ model.cameraOrbit='35deg 68deg auto';model.fieldOfView='auto';model.jumpCameraToGoal(); });
-loadPrayers();
-// Refresh when Malaysia's calendar day changes, even if the page stays open.
-setInterval(()=>{if(todayMY() !== (window.__lastPrayerDay || (window.__lastPrayerDay=todayMY()))){window.__lastPrayerDay=todayMY();loadPrayers();}},60000);
 
-// // ============================================================
-// // Model annotations
-// // Hotspots are intentionally hidden until placed on your GLB.
-// // Use the 'Place labels' button to pick actual points in developer mode.
-// // ============================================================
-// const ANNOTATIONS = {
-//   entrance: {
-//     title: 'Main entrance',
-//     description: 'Replace this with verified information about the mosque entrance.'
-//   },
-//   roof: {
-//     title: 'Roof details',
-//     description: 'Describe the roof structure and its architectural features here.'
-//   },
-//   hall: {
-//     title: 'Prayer hall',
-//     description: 'Add information about the prayer hall and its layout here.'
-//   }
-// };
+function initializePrayerTimes() {
+  loadPrayerTimes();
 
-// const annotationPanel = document.querySelector('#annotation-detail');
-// const hotspotButtons = [...document.querySelectorAll('.hotspot')];
+  $("#refresh-prayers")?.addEventListener("click", () => {
+    loadPrayerTimes(true);
+  });
 
-// // Developer tool: pick a visible surface to obtain accurate model-space coordinates.
-// // Click 'Place labels', then click the mosque. Copy the logged position and normal
-// // into the matching hotspot in index.html, then remove its `hidden` attribute.
-// let isPickingHotspot = false;
-// const pickButton = document.querySelector('#pick-hotspots');
+  let lastDate = malaysiaDate();
 
-// pickButton.addEventListener('click', () => {
-//   isPickingHotspot = !isPickingHotspot;
-//   pickButton.setAttribute('aria-pressed', String(isPickingHotspot));
-//   pickButton.textContent = isPickingHotspot ? '✓ Picking (click model)' : '⌖ Place labels';
-//   model.autoRotate = !isPickingHotspot;
-// });
+  setInterval(() => {
+    const today = malaysiaDate();
 
-// model.addEventListener('click', (event) => {
-//   if (!isPickingHotspot || event.target.closest?.('.hotspot')) return;
-//   const bounds = model.getBoundingClientRect();
-//   const point = model.positionAndNormalFromPoint(
-//     event.clientX - bounds.left,
-//     event.clientY - bounds.top
-//   );
-//   if (!point) return;
+    if (today !== lastDate) {
+      lastDate = today;
+      loadPrayerTimes();
+    }
+  }, 60000);
+}
 
-//   const toMeters = (n) => `${n.toFixed(3)}m`;
-//   const position = [point.position.x, point.position.y, point.position.z]
-//     .map(toMeters).join(' ');
-//   const normal = [point.normal.x, point.normal.y, point.normal.z]
-//     .map(toMeters).join(' ');
-//   console.info('Hotspot coordinates:', { position, normal });
-//   window.alert(`Copy into your hotspot in index.html:\ndata-position=\"${position}\"\ndata-normal=\"${normal}\"`);
-// });
+/* ==========================================================
+   3. MODEL VIEWER
+   ========================================================== */
 
-// hotspotButtons.forEach((button) => {
-//   button.addEventListener('click', () => {
-//     const annotation = ANNOTATIONS[button.dataset.annotation];
-//     if (!annotation) return;
-
-//     document.querySelector('#annotation-title').textContent = annotation.title;
-//     document.querySelector('#annotation-text').textContent = annotation.description;
-//     annotationPanel.hidden = false;
-//     model.autoRotate = false; // Keep the selected point in view.
-//   });
-// });
-
-// document.querySelector('#close-annotation').addEventListener('click', () => {
-//   annotationPanel.hidden = true;
-//   model.autoRotate = true;
-// });
-
-// document.querySelector('#toggle-annotations').addEventListener('click', (event) => {
-//   const button = event.currentTarget;
-//   const showing = button.getAttribute('aria-pressed') === 'true';
-//   hotspotButtons.forEach((hotspot) => { hotspot.hidden = showing; });
-//   button.setAttribute('aria-pressed', String(!showing));
-//   button.textContent = showing ? '◎ Show labels' : '◎ Hide labels';
-//   if (showing) annotationPanel.hidden = true;
-// });
-
-
-/* =========================================================
-   MODEL-VIEWER ANNOTATION PLACEMENT TOOL
-   ========================================================= */
-
-function initializeAnnotationPlacement() {
-  const model = document.querySelector("#mosqueModel");
-  const toggleButton = document.querySelector("#togglePlacement");
-  const output = document.querySelector("#placementOutput");
-  const positionInput = document.querySelector("#annotationPosition");
-  const normalInput = document.querySelector("#annotationNormal");
-  const copyButton = document.querySelector("#copyAnnotation");
-
-  if (!model || !toggleButton || !output) {
-    console.warn("Annotation placement elements not found.");
+function initializeModelViewer() {
+  if (!model) {
+    console.warn("Model viewer #mosque-model not found.");
     return;
   }
 
-  let isPlacementMode = false;
-  let latestAnnotationHTML = "";
-  let previewHotspot = null;
+  model.addEventListener("load", () => {
+    const error = $("#model-error");
+    if (error) error.hidden = true;
+  });
 
-  // Convert a model-viewer Vector3 into a hotspot string.
-  function formatVector(vector) {
-    return `${vector.x.toFixed(4)}m ${vector.y.toFixed(4)}m ${vector.z.toFixed(4)}m`;
+  model.addEventListener("error", () => {
+    const error = $("#model-error");
+    if (error) error.hidden = false;
+  });
+
+  $("#reset-camera")?.addEventListener("click", () => {
+    model.cameraOrbit = "35deg 68deg auto";
+    model.fieldOfView = "auto";
+    model.jumpCameraToGoal();
+  });
+}
+
+/* ==========================================================
+   4. ANNOTATION CONTENT
+   ========================================================== */
+
+const ANNOTATIONS = {
+  entrance: {
+    title: "Main Entrance",
+    description: "Information about the mosque's main entrance."
+  },
+
+  roof: {
+    title: "Roof and Dome",
+    description: "Information about the mosque's architectural design."
+  },
+
+  hall: {
+    title: "Prayer Hall",
+    description: "Information about the main prayer hall."
+  },
+
+  minaret: {
+    title: "Minaret",
+    description: "Information about the mosque's minaret."
+  }
+};
+
+/* ==========================================================
+   5. ANNOTATION PLACEMENT EDITOR
+   ========================================================== */
+
+function initializeAnnotations() {
+  if (!model) return;
+
+  const pickButton = $("#pick-hotspots");
+  const toggleLabelsButton = $("#toggle-annotations");
+  const detailPanel = $("#annotation-detail");
+
+  let isPicking = false;
+  let preview = null;
+  let selectedHTML = "";
+  let pointerStart = null;
+
+  const originalControls = model.hasAttribute("camera-controls");
+  const originalRotation = model.autoRotate;
+
+  // Create an editor panel automatically.
+  const editor = document.createElement("div");
+  editor.id = "annotation-editor";
+  editor.hidden = true;
+
+  editor.style.cssText = `
+    margin-top: 16px;
+    padding: 20px;
+    border: 1px solid #b99a65;
+    border-radius: 14px;
+    background: #14372f;
+    color: #ffffff;
+  `;
+
+  editor.innerHTML = `
+    <strong>Annotation Placement</strong>
+    <p id="editor-message">
+      Click a surface on the 3D mosque.
+    </p>
+
+    <label for="editor-position">Position</label>
+    <input id="editor-position" readonly
+      style="width:100%;padding:10px;margin:8px 0 12px">
+
+    <label for="editor-normal">Normal</label>
+    <input id="editor-normal" readonly
+      style="width:100%;padding:10px;margin:8px 0 12px">
+
+    <button type="button" id="editor-copy"
+      style="padding:10px 18px;cursor:pointer">
+      Copy Hotspot HTML
+    </button>
+  `;
+
+  // Place the editor below the model controls.
+  (pickButton?.parentElement || model).insertAdjacentElement(
+    "afterend",
+    editor
+  );
+
+  const positionInput = editor.querySelector("#editor-position");
+  const normalInput = editor.querySelector("#editor-normal");
+  const message = editor.querySelector("#editor-message");
+  const copyButton = editor.querySelector("#editor-copy");
+
+  function formatVector(vector, units = true) {
+    return [vector.x, vector.y, vector.z]
+      .map(value => `${value.toFixed(4)}${units ? "m" : ""}`)
+      .join(" ");
   }
 
-  // Create a temporary hotspot inside model-viewer.
-  function createPreviewHotspot() {
-    const hotspot = document.createElement("button");
+  function createPreview() {
+    const button = document.createElement("button");
 
-    hotspot.type = "button";
-    hotspot.slot = "hotspot-preview";
-    hotspot.className = "hotspot preview-hotspot";
-    hotspot.setAttribute("aria-label", "Annotation preview");
+    button.type = "button";
+    button.slot = "hotspot-preview";
+    button.className = "preview-hotspot";
+    button.textContent = "+";
+    button.setAttribute("aria-label", "Annotation preview");
 
-    hotspot.innerHTML = `
-      <span class="hotspot-pin">+</span>
-      <span class="hotspot-label">New annotation</span>
+    button.style.cssText = `
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: #e6bc70;
+      color: #12362c;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 0 6px rgba(230,188,112,.2);
     `;
 
-    model.appendChild(hotspot);
-    return hotspot;
+    model.appendChild(button);
+    return button;
   }
 
-  // Enable or disable annotation placement.
-  function setPlacementMode(enabled) {
-    isPlacementMode = enabled;
+  function setPicking(enabled) {
+    isPicking = enabled;
 
-    toggleButton.classList.toggle("active", enabled);
-    toggleButton.setAttribute("aria-pressed", String(enabled));
-    toggleButton.textContent = enabled
-      ? "✕ Exit Placement"
-      : "📍 Place Labels";
+    if (pickButton) {
+      pickButton.textContent = enabled
+        ? "✕ Exit Placement"
+        : "⌖ Place labels";
 
-    model.classList.toggle("placement-mode", enabled);
+      pickButton.setAttribute("aria-pressed", String(enabled));
+    }
 
-    // Stop model rotation while selecting geometry.
+    editor.hidden = !enabled;
+    model.style.cursor = enabled ? "crosshair" : "";
+
     if (enabled) {
       model.autoRotate = false;
       model.removeAttribute("camera-controls");
-      output.hidden = false;
     } else {
-      model.autoRotate = true;
-      model.setAttribute("camera-controls", "");
-      output.hidden = true;
+      model.autoRotate = originalRotation;
+      model.toggleAttribute("camera-controls", originalControls);
 
-      if (previewHotspot) {
-        previewHotspot.remove();
-        previewHotspot = null;
-      }
+      pointerStart = null;
+
+      preview?.remove();
+      preview = null;
     }
   }
 
-  toggleButton.addEventListener("click", () => {
-    setPlacementMode(!isPlacementMode);
+  pickButton?.addEventListener("click", () => {
+    setPicking(!isPicking);
   });
 
-  // Raycast against the GLB when the user clicks.
-  model.addEventListener("click", (event) => {
-    if (!isPlacementMode) return;
+  model.addEventListener("pointerdown", event => {
+    if (!isPicking || event.button !== 0) return;
 
-    // Ignore clicks on existing hotspots.
-    if (event.target.closest?.("[slot^='hotspot-']")) {
+    pointerStart = {
+      x: event.clientX,
+      y: event.clientY
+    };
+  });
+
+  model.addEventListener("pointerup", event => {
+    if (!isPicking || !pointerStart) return;
+
+    const distance = Math.hypot(
+      event.clientX - pointerStart.x,
+      event.clientY - pointerStart.y
+    );
+
+    pointerStart = null;
+    if (distance > 6) return;
+
+    if (!model.loaded) {
+      message.textContent = "Wait for the model to load.";
       return;
     }
 
-    if (!model.loaded) {
-      console.warn("The 3D model has not finished loading.");
+    if (typeof model.positionAndNormalFromPoint !== "function") {
+      message.textContent = "Raycasting is unavailable.";
+      console.error("model-viewer raycasting API missing.");
       return;
     }
 
     const rect = model.getBoundingClientRect();
 
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    const hit = model.positionAndNormalFromPoint(x, y);
+    const hit = model.positionAndNormalFromPoint(
+      event.clientX - rect.left,
+      event.clientY - rect.top
+    );
 
     if (!hit) {
-      console.info("No mesh was detected at this position.");
+      message.textContent = "No surface detected. Try another point.";
       return;
     }
 
     const position = formatVector(hit.position);
-    const normal = formatVector(hit.normal);
+    const normal = formatVector(hit.normal, false);
 
     positionInput.value = position;
     normalInput.value = normal;
 
-    if (!previewHotspot) {
-      previewHotspot = createPreviewHotspot();
-    }
+    if (!preview) preview = createPreview();
 
-    previewHotspot.dataset.position = position;
-    previewHotspot.dataset.normal = normal;
+    preview.dataset.position = position;
+    preview.dataset.normal = normal;
 
-    latestAnnotationHTML = `
-<button
-  class="hotspot"
-  slot="hotspot-custom"
-  data-position="${position}"
-  data-normal="${normal}"
-  data-annotation="custom"
->
-  <span class="hotspot-pin">+</span>
-  <span class="hotspot-label">New annotation</span>
-</button>`.trim();
+    selectedHTML = [
+      '<button',
+      '  class="hotspot"',
+      '  slot="hotspot-custom"',
+      `  data-position="${position}"`,
+      `  data-normal="${normal}"`,
+      '  data-annotation="custom"',
+      '>',
+      '  <span class="hotspot-pin">+</span>',
+      '  <span class="hotspot-label">New annotation</span>',
+      '</button>'
+    ].join("\n");
 
-    console.log("Annotation position:", position);
-    console.log("Annotation normal:", normal);
+    message.textContent =
+      "Surface selected. Copy the HTML to save this annotation.";
+
+    console.log("Annotation selected:", { position, normal });
   });
 
-  // Copy generated hotspot HTML.
   copyButton.addEventListener("click", async () => {
-    if (!latestAnnotationHTML) {
-      alert("Click a part of the mosque first.");
+    if (!selectedHTML) {
+      message.textContent = "Select a surface first.";
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(latestAnnotationHTML);
-
-      const previousText = copyButton.textContent;
-      copyButton.textContent = "✓ Copied!";
-
-      setTimeout(() => {
-        copyButton.textContent = previousText;
-      }, 1500);
+      await navigator.clipboard.writeText(selectedHTML);
+      message.textContent = "Hotspot HTML copied!";
     } catch (error) {
-      console.error("Clipboard failed:", error);
-      alert("Unable to copy. Check clipboard permissions.");
+      console.error("Clipboard error:", error);
+      message.textContent =
+        "Copy failed. Use localhost or HTTPS for clipboard access.";
+    }
+  });
+
+  // Permanent annotation interaction.
+  const hotspots = $$(".hotspot");
+
+  hotspots.forEach(hotspot => {
+    hotspot.addEventListener("click", event => {
+      if (isPicking) return;
+
+      event.stopPropagation();
+
+      const data = ANNOTATIONS[hotspot.dataset.annotation];
+      if (!data || !detailPanel) return;
+
+      const title = $("#annotation-title");
+      const description = $("#annotation-text");
+
+      if (title) title.textContent = data.title;
+      if (description) description.textContent = data.description;
+
+      detailPanel.hidden = false;
+      model.autoRotate = false;
+    });
+  });
+
+  $("#close-annotation")?.addEventListener("click", () => {
+    if (detailPanel) detailPanel.hidden = true;
+    if (!isPicking) model.autoRotate = originalRotation;
+  });
+
+  toggleLabelsButton?.addEventListener("click", () => {
+    const currentlyVisible =
+      toggleLabelsButton.getAttribute("aria-pressed") === "true";
+
+    hotspots.forEach(hotspot => {
+      hotspot.hidden = currentlyVisible;
+    });
+
+    toggleLabelsButton.setAttribute(
+      "aria-pressed",
+      String(!currentlyVisible)
+    );
+
+    toggleLabelsButton.textContent = currentlyVisible
+      ? "◎ Show labels"
+      : "◎ Hide labels";
+
+    if (currentlyVisible && detailPanel) {
+      detailPanel.hidden = true;
     }
   });
 }
 
-// Initialize once the HTML document is ready.
-if (document.readyState === "loading") {
-  document.addEventListener(
-    "DOMContentLoaded",
-    initializeAnnotationPlacement
-  );
-} else {
-  initializeAnnotationPlacement();
-}
+/* ==========================================================
+   6. MOSQUE PHOTO CAROUSEL
+   ========================================================== */
 
+function initializePhotoCarousel() {
+  const carousel = $(".photo-carousel");
+  const photos = $$(".mosque-photo");
 
+  if (!carousel || !photos.length) return;
 
-// ============================================================
-// About section photo carousel
-// Missing images are skipped. Add assets/mosque-1.jpg, etc.
-// ============================================================
-const photoCarousel = document.querySelector('.photo-carousel');
-const photos = [...document.querySelectorAll('.mosque-photo')];
-let photoIndex = 0;
+  let currentIndex = 0;
 
-function availablePhotos() {
-  return photos.filter((photo) => photo.complete && photo.naturalWidth > 0);
-}
-
-function showPhoto(index) {
-  const validPhotos = availablePhotos();
-  photos.forEach((photo) => photo.classList.remove('active'));
-
-  if (!validPhotos.length) {
-    photoCarousel.classList.remove('has-photo');
-    document.querySelector('#photo-count').textContent = '00 / 00';
-    return;
+  function availablePhotos() {
+    return photos.filter(photo =>
+      photo.complete && photo.naturalWidth > 0
+    );
   }
 
-  photoIndex = (index + validPhotos.length) % validPhotos.length;
-  validPhotos[photoIndex].classList.add('active');
-  photoCarousel.classList.add('has-photo');
-  document.querySelector('#photo-count').textContent =
-    `${String(photoIndex + 1).padStart(2, '0')} / ${String(validPhotos.length).padStart(2, '0')}`;
+  function showPhoto(index) {
+    const available = availablePhotos();
+
+    photos.forEach(photo => photo.classList.remove("active"));
+
+    if (!available.length) {
+      carousel.classList.remove("has-photo");
+
+      const count = $("#photo-count");
+      if (count) count.textContent = "00 / 00";
+      return;
+    }
+
+    currentIndex =
+      ((index % available.length) + available.length) %
+      available.length;
+
+    available[currentIndex].classList.add("active");
+    carousel.classList.add("has-photo");
+
+    const count = $("#photo-count");
+    if (count) {
+      count.textContent =
+        `${String(currentIndex + 1).padStart(2, "0")} / ` +
+        `${String(available.length).padStart(2, "0")}`;
+    }
+  }
+
+  photos.forEach(photo => {
+    photo.addEventListener("load", () => showPhoto(currentIndex));
+    photo.addEventListener("error", () => showPhoto(currentIndex));
+  });
+
+  $("#photo-prev")?.addEventListener("click", () => {
+    showPhoto(currentIndex - 1);
+  });
+
+  $("#photo-next")?.addEventListener("click", () => {
+    showPhoto(currentIndex + 1);
+  });
+
+  showPhoto(0);
 }
 
-photos.forEach((photo) => {
-  photo.addEventListener('load', () => showPhoto(photoIndex));
-  photo.addEventListener('error', () => showPhoto(photoIndex));
-});
+/* ==========================================================
+   7. INITIALIZATION
+   ========================================================== */
 
-document.querySelector('#photo-prev').addEventListener('click', () => showPhoto(photoIndex - 1));
-document.querySelector('#photo-next').addEventListener('click', () => showPhoto(photoIndex + 1));
-showPhoto(0);
+function initializeApp() {
+  initializeNavigation();
+  initializePrayerTimes();
+  initializeModelViewer();
+  initializeAnnotations();
+  initializePhotoCarousel();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApp);
+} else {
+  initializeApp();
+}

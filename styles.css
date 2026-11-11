@@ -922,3 +922,145 @@ h1 em,h2 em {
   color: #e1bd78;
   border-color: #e1bd78;
 }
+
+
+
+/* =========================================================
+   ANNOTATION PLACEMENT EDITOR
+   ========================================================= */
+
+.annotation-editor {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.placement-button {
+  padding: 12px 22px;
+  border: 1px solid rgba(218, 186, 126, 0.45);
+  border-radius: 12px;
+
+  background: #173e34;
+  color: #f5e8cd;
+
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.2s, transform 0.2s;
+}
+
+.placement-button:hover {
+  background: #245747;
+  transform: translateY(-2px);
+}
+
+.placement-button.active {
+  background: #d7b477;
+  color: #173e34;
+}
+
+.placement-mode {
+  cursor: crosshair !important;
+}
+
+.placement-output {
+  width: 100%;
+  max-width: 520px;
+  padding: 20px;
+
+  background: #12372f;
+  border: 1px solid rgba(215, 180, 119, 0.35);
+  border-radius: 16px;
+
+  color: #f5f0e6;
+}
+
+.placement-output[hidden] {
+  display: none;
+}
+
+.placement-output-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.placement-output-header span {
+  font-size: 13px;
+  color: #b8c9c0;
+}
+
+.placement-output label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 13px;
+}
+
+.placement-output input {
+  width: 100%;
+  padding: 12px;
+
+  background: #0b2922;
+  color: #e8d4ac;
+  border: 1px solid #426559;
+  border-radius: 8px;
+
+  font-family: monospace;
+  font-size: 13px;
+}
+
+#copyAnnotation {
+  margin-top: 18px;
+  padding: 11px 18px;
+
+  background: #d7b477;
+  color: #173e34;
+
+  border: none;
+  border-radius: 9px;
+
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Temporary preview annotation */
+.preview-hotspot {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.preview-hotspot .hotspot-pin {
+  display: grid;
+  place-items: center;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+
+  background: #e5bc65;
+  color: #12372f;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  box-shadow: 0 0 0 6px rgba(229, 188, 101, 0.22);
+}
+
+.preview-hotspot .hotspot-label {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 10px;
+
+  background: #12372f;
+  color: white;
+
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
