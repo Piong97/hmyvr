@@ -1,516 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <meta content="#0c2724" name="theme-color"/>
-  <meta content="Explore Haji Mohammad Yassin Mosque in Pagoh, Muar through an interactive VR heritage experience." name="description"/>
-  <title>
-   Haji Mohammad Yassin | VR Mosque Experience
-  </title>
-  <link href="https://fonts.googleapis.com" rel="preconnect"/>
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="styles.css" rel="stylesheet"/>
-  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js" type="module">
-  </script>
-  <script defer="" src="script.js">
-  </script>
- </head>
- <body>
-  <header class="site-header">
-   <div class="shell nav">
-    <a aria-label="Haji Mohammad Yassin VR home" class="brand" href="index.html">
-     <span class="logo-frame">
-      <img alt="VR logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_vr.png"/>
-      <span class="logo-fallback" hidden="">
-       HMY-VR
-      </span>
-     </span>
-     <span class="brand-copy">
-      <strong>
-       HAJI MOHAMMAD YASSIN
-      </strong>
-      <small>
-       VIRTUAL MOSQUE EXPERIENCE
-      </small>
-     </span>
-    </a>
-    <nav aria-label="Main navigation" class="primary-nav" id="primary-nav">
-     <a aria-current="page" class="active" href="index.html">
-      Home
-     </a>
-     <a href="gallery.html">
-      Gallery
-     </a>
-     <a href="ar-cam.html">
-      AR Cam
-     </a>
-    </nav>
-    <div class="nav-actions">
-     <span class="project-logo">
-      <img alt="Company logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_company.png"/>
-      <span hidden="">
-       Warisan XR
-      </span>
-     </span>
-     <button aria-controls="primary-nav" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle" id="menu-toggle">
-      <span>
-      </span>
-      <span>
-      </span>
-      <span>
-      </span>
-     </button>
-    </div>
-   </div>
-  </header>
-  <main>
-   <section class="hero">
-    <div class="hero-glow">
-    </div>
-    <div class="shell hero-grid">
-     <div class="hero-copy">
-      <div class="eyebrow">
-       <span class="eyebrow-line">
-       </span>
-       A NEW WAY TO EXPLORE HERITAGE
-      </div>
-      <h1>
-       Discover the mosque.
-       <br/>
-       <em>
-        Beyond the ordinary.
-       </em>
-      </h1>
-      <p>
-       Step into a digital journey through Haji Mohammad Yassin Mosque, Pagoh. Explore its architecture, appreciate its heritage, and experience a new perspective through immersive technology.
-      </p>
-      <div class="hero-buttons">
-       <a class="btn btn-gold" href="gallery.html">
-        Explore Gallery
-        <span aria-hidden="true">
-         &nearrow;
-        </span>
-       </a>
-       <a class="btn btn-outline" href="ar-cam.html">
-        Launch AR Cam
-        <span aria-hidden="true">
-         &nearrow;
-        </span>
-       </a>
-      </div>
-      <div class="hero-note">
-       <span class="dot">
-       </span>
-       PAGOH, MUAR &middot; JOHOR, MALAYSIA
-      </div>
-     </div>
-     <div class="viewer-panel">
-      <div class="viewer-top">
-       <span class="viewer-kicker">
-        INTERACTIVE 3D EXPERIENCE
-       </span>
-       <span class="live-pill">
-        <span class="dot">
-        </span>
-        AUTO ROTATE
-       </span>
-      </div>
-      <model-viewer alt="Interactive 3D model of Haji Mohammad Yassin Mosque" auto-rotate="" auto-rotate-delay="0" camera-controls="" camera-orbit="35deg 68deg auto" environment-image="neutral" exposure="0.85" id="mosque-model" interaction-prompt="auto" loading="eager" max-camera-orbit="auto 90deg auto" min-camera-orbit="auto 15deg auto" rotation-per-second="12deg" shadow-intensity="0.9" shadow-softness="1" src="models/mosque.glb" tone-mapping="neutral" touch-action="pan-y">
-       <button aria-label="Learn about the entrance" class="hotspot" data-annotation="entrance" data-normal="0m 1m 0m" data-position="0m 0m 1m" hidden="" slot="hotspot-entrance">
-        <span class="hotspot-pin">
-         +
-        </span>
-        <span class="hotspot-label">
-         Main entrance
-        </span>
-       </button>
-       <button aria-label="Learn about the roof" class="hotspot" data-annotation="roof" data-normal="0m 1m 0m" data-position="0m 3m 0m" hidden="" slot="hotspot-roof">
-        <span class="hotspot-pin">
-         +
-        </span>
-        <span class="hotspot-label">
-         Roof details
-        </span>
-       </button>
-       <button aria-label="Learn about the prayer hall" class="hotspot" data-annotation="hall" data-normal="0m 1m 0m" data-position="1m 1m 0m" hidden="" slot="hotspot-hall">
-        <span class="hotspot-pin">
-         +
-        </span>
-        <span class="hotspot-label">
-         Prayer hall
-        </span>
-       </button>
-       <div class="model-placeholder" slot="poster">
-        <div class="model-symbol">
-         ۞
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="#0c2724" name="theme-color" />
+    <meta content="Explore Haji Mohammad Yassin Mosque in Pagoh, Muar through an interactive VR heritage experience."
+        name="description" />
+    <title>
+        Haji Mohammad Yassin | VR Mosque Experience
+    </title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js" type="module">
+    </script>
+    <script defer="" src="script.js">
+    </script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="shell nav">
+            <a aria-label="Haji Mohammad Yassin VR home" class="brand" href="index.html">
+                <span class="logo-frame">
+                    <img alt="Company logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+                        src="assets/logo_company.png" />
+                    <span class="logo-fallback" hidden="">
+                        HMY
+                    </span>
+                </span>
+                <span class="brand-copy">
+                    <strong>
+                        HAJI MOHAMMAD YASSIN
+                    </strong>
+                    <small>
+                        VIRTUAL MOSQUE EXPERIENCE
+                    </small>
+                </span>
+            </a>
+            <nav aria-label="Main navigation" class="primary-nav" id="primary-nav">
+                <a aria-current="page" class="active" href="index.html">
+                    Home
+                </a>
+                <a href="gallery.html">
+                    Gallery
+                </a>
+                <a href="ar-cam.html">
+                    AR Cam
+                </a>
+            </nav>
+            <div class="nav-actions">
+                <span class="project-logo">
+                    <img alt="VR project logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+                        src="assets/logo_vr.png" />
+                    <span hidden="">
+                        VR
+                    </span>
+                </span>
+                <button aria-controls="primary-nav" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle"
+                    id="menu-toggle">
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                    <span>
+                    </span>
+                </button>
+            </div>
         </div>
-        <strong>
-         3D Mosque Preview
-        </strong>
-        <span>
-         Add your model to
-         <code>
-          models/mosque.glb
-         </code>
-        </span>
-       </div>
-       <div class="progress" slot="progress-bar">
-        <div class="progress-fill">
-        </div>
-       </div>
-      </model-viewer>
-      <!-- Annotation placement controls -->
-<div class="annotation-editor">
-  <button
-    type="button"
-    id="togglePlacement"
-    class="placement-button"
-    aria-pressed="false"
-  >
-    <span>📍</span>
-    Place Labels
-  </button>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-glow">
+            </div>
+            <div class="shell hero-grid">
+                <div class="hero-copy">
+                    <div class="eyebrow">
+                        <span class="eyebrow-line">
+                        </span>
+                        A NEW WAY TO EXPLORE HERITAGE
+                    </div>
+                    <h1>
+                        Discover the mosque.
+                        <br />
+                        <em>
+                            Beyond the ordinary.
+                        </em>
+                    </h1>
+                    <p>
+                        Step into a digital journey through Haji Mohammad Yassin Mosque, Pagoh. Explore its
+                        architecture, appreciate its heritage, and experience a new perspective through immersive
+                        technology.
+                    </p>
+                    <div class="hero-buttons">
+                        <a class="btn btn-gold" href="gallery.html">
+                            Explore Gallery
+                            <span aria-hidden="true">
+                                &nearrow;
+                            </span>
+                        </a>
+                        <a class="btn btn-outline" href="ar-cam.html">
+                            Launch AR Cam
+                            <span aria-hidden="true">
+                                &nearrow;
+                            </span>
+                        </a>
+                    </div>
+                    <div class="hero-note">
+                        <span class="dot">
+                        </span>
+                        PAGOH, MUAR &middot; JOHOR, MALAYSIA
+                    </div>
+                </div>
+                <div class="viewer-panel">
+                    <div class="viewer-top">
+                        <span class="viewer-kicker">
+                            INTERACTIVE 3D EXPERIENCE
+                        </span>
+                        <span class="live-pill">
+                            <span class="dot">
+                            </span>
+                            AUTO ROTATE
+                        </span>
+                    </div>
+                    <model-viewer alt="Interactive 3D model of Haji Mohammad Yassin Mosque" auto-rotate=""
+                        auto-rotate-delay="0" camera-controls="" camera-orbit="35deg 68deg auto"
+                        environment-image="neutral" exposure="0.85" id="mosque-model" interaction-prompt="auto"
+                        loading="eager" max-camera-orbit="auto 90deg auto" min-camera-orbit="auto 15deg auto"
+                        rotation-per-second="12deg" shadow-intensity="0.9" shadow-softness="1" src="models/mosque.glb"
+                        tone-mapping="neutral" touch-action="pan-y" ar>
 
-  <div id="placementOutput" class="placement-output" hidden>
-    <div class="placement-output-header">
-      <strong>Annotation Coordinates</strong>
-      <span>Click anywhere on the mosque</span>
-    </div>
 
-    <label for="annotationPosition">Position</label>
-    <input id="annotationPosition" readonly />
+                        <!-- Main Entrance -->
+                        <button class="hotspot" slot="hotspot-entrance" data-annotation="entrance"
+                            data-position="4.5m -14.5m -4.5m" aria-label="Main Entrance">
+                            <span class="hotspot-pin">+</span>
+                            <span class="hotspot-label">Main Entrance</span>
+                        </button>
 
-    <label for="annotationNormal">Normal</label>
-    <input id="annotationNormal" readonly />
+                        <!-- Main Roof -->
+                        <button class="hotspot" slot="hotspot-roof" data-annotation="roof"
+                            data-position="-2.38m -10.5m -4.32m" aria-label="Roof Details">
+                            <span class="hotspot-pin">+</span>
+                            <span class="hotspot-label">Roof Details</span>
+                        </button>
 
-    <button type="button" id="copyAnnotation">
-      Copy Hotspot HTML
-    </button>
-  </div>
-</div>
+                        <!-- Prayer Hall -->
+                        <button class="hotspot" slot="hotspot-hall" data-annotation="hall"
+                            data-position="5m -12.5m -4.32m" aria-label="Prayer Hall">
+                            <span class="hotspot-pin">+</span>
+                            <span class="hotspot-label">Prayer Hall</span>
+                        </button>
 
-      <div class="model-error" hidden="" id="model-error">
-       Model not found yet. Add your GLB file at
-       <code>
+
+                        <div class="model-placeholder" slot="poster">
+                            <div class="model-symbol">
+                                ۞
+                            </div>
+                            <strong>
+                                3D Mosque Preview
+                            </strong>
+                            <span>
+                                Add your model to
+                                <code>models/mosque.glb</code>
+                            </span>
+                        </div>
+                        <div class="progress" slot="progress-bar">
+                            <div class="progress-fill">
+                            </div>
+                        </div>
+                    </model-viewer>
+                    <div class="model-error" hidden="" id="model-error">
+                        Model not found yet. Add your GLB file at
+                        <code>
         models/mosque.glb
        </code>
-       .
-      </div>
-      <div class="annotation-detail" hidden="" id="annotation-detail">
-       <button aria-label="Close annotation" id="close-annotation" type="button">
-        &times;
-       </button>
-       <strong id="annotation-title">
-       </strong>
-       <p id="annotation-text">
-       </p>
-      </div>
-      <div class="viewer-bottom">
-       <span>
-        &harr; Drag to rotate
-       </span>
-       <span>
-        &oplus; Scroll to zoom
-       </span>
-       <button aria-pressed="false" id="toggle-annotations" type="button">
-        ◎ Show labels
-       </button>
-       <button id="pick-hotspots" title="Developer mode: click the model to get a hotspot position" type="button">
-        &target; Place labels
-       </button>
-       <button id="reset-camera" type="button">
-        &olarr; Reset view
-       </button>
-      </div>
-     </div>
-    </div>
-    <div class="shell hero-footer">
-     <span>
-      01 / THE EXPERIENCE
-     </span>
-     <span class="scroll-label">
-      SCROLL TO DISCOVER &darr;
-     </span>
-    </div>
-   </section>
-   <section class="prayer-section" id="prayer-times">
-    <div class="shell">
-     <div class="section-heading">
-      <div>
-       <div class="section-eyebrow">
-        CONNECTED TO THE COMMUNITY
-       </div>
-       <h2>
-        Daily Prayer
-        <em>
-         Times
-        </em>
-       </h2>
-       <p>
-        Today's prayer schedule for Pagoh, Muar &mdash; JAKIM zone JHR04.
-       </p>
-      </div>
-      <div class="prayer-meta">
-       <span id="date-label">
-        Loading date&hellip;
-       </span>
-       <span class="zone-tag">
-        ◉ JHR04 &middot; MUAR
-       </span>
-      </div>
-     </div>
-     <div aria-live="polite" class="prayer-grid" id="prayer-grid">
-      <article class="prayer-card">
-       <span class="prayer-index">
-        01
-       </span>
-       <span class="prayer-icon">
-        ☾
-       </span>
-       <h3>
-        Subuh
-       </h3>
-       <strong id="time-fajr">
-        --:--
-       </strong>
-       <span class="prayer-en">
-        Fajr
-       </span>
-      </article>
-      <article class="prayer-card">
-       <span class="prayer-index">
-        02
-       </span>
-       <span class="prayer-icon">
-        ☀
-       </span>
-       <h3>
-        Zohor
-       </h3>
-       <strong id="time-dhuhr">
-        --:--
-       </strong>
-       <span class="prayer-en">
-        Dhuhr
-       </span>
-      </article>
-      <article class="prayer-card">
-       <span class="prayer-index">
-        03
-       </span>
-       <span class="prayer-icon">
-        ◐
-       </span>
-       <h3>
-        Asar
-       </h3>
-       <strong id="time-asr">
-        --:--
-       </strong>
-       <span class="prayer-en">
-        Asr
-       </span>
-      </article>
-      <article class="prayer-card">
-       <span class="prayer-index">
-        04
-       </span>
-       <span class="prayer-icon">
-        ◒
-       </span>
-       <h3>
-        Maghrib
-       </h3>
-       <strong id="time-maghrib">
-        --:--
-       </strong>
-       <span class="prayer-en">
-        Maghrib
-       </span>
-      </article>
-      <article class="prayer-card">
-       <span class="prayer-index">
-        05
-       </span>
-       <span class="prayer-icon">
-        ✧
-       </span>
-       <h3>
-        Isyak
-       </h3>
-       <strong id="time-isha">
-        --:--
-       </strong>
-       <span class="prayer-en">
-        Isha
-       </span>
-      </article>
-     </div>
-     <div class="prayer-footer">
-      <span id="prayer-status" role="status">
-       Fetching prayer times&hellip;
-      </span>
-      <button class="text-button" id="refresh-prayers" type="button">
-       &orarr; Refresh times
-      </button>
-     </div>
-    </div>
-   </section>
-   <section class="about-section" id="about">
-    <div class="shell about-grid">
-     <div class="about-media">
-      <div aria-label="Mosque photo gallery" class="photo-carousel">
-       <img alt="Photograph of Haji Mohammad Yassin Mosque" class="mosque-photo active" onerror="this.classList.add('missing-photo')" src="assets/mosque-1.jpg"/>
-       <img alt="Another view of the mosque" class="mosque-photo" onerror="this.classList.add('missing-photo')" src="assets/mosque-2.jpg"/>
-       <img alt="Architectural details of the mosque" class="mosque-photo" onerror="this.classList.add('missing-photo')" src="assets/mosque-3.jpg"/>
-       <div class="photo-placeholder" id="photo-placeholder">
-        <span>
-         HMY
-        </span>
-        <p>
-         Add your mosque photos in
-         <code>
+                        .
+                    </div>
+                    <div class="annotation-detail" hidden="" id="annotation-detail">
+                        <button aria-label="Close annotation" id="close-annotation" type="button">
+                            &times;
+                        </button>
+                        <strong id="annotation-title">
+                        </strong>
+                        <p id="annotation-text">
+                        </p>
+                    </div>
+
+                    <div class="viewer-bottom">
+                        <div class="viewer-actions">
+                            <button id="toggle-hotspots" type="button" aria-pressed="true">
+                                <span class="action-icon" id="hotspots-icon">◉</span>
+                                <span id="hotspots-text">Hide Hotspots</span>
+                            </button>
+
+                            <button id="toggle-rotation" type="button" aria-pressed="false"
+                                aria-label="Pause automatic rotation">
+                                <span class="action-icon">⏸</span>
+                                <span>Pause rotation</span>
+                            </button>
+
+                            <button id="reset-camera" type="button">
+                                <span class="action-icon">↺</span>
+                                <span>Reset view</span>
+                            </button>
+
+                            <button id="toggle-fullscreen" type="button" aria-label="Enter fullscreen"
+                                aria-pressed="false">
+                                <span class="action-icon">⛶</span>
+                                <span>Fullscreen</span>
+                            </button>
+                        </div>
+                        <div class="viewer-hints">
+                            <span>↔ Drag to rotate</span>
+                            <span>⊕ Scroll to zoom</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="shell hero-footer">
+                <span>
+                    01 / THE EXPERIENCE
+                </span>
+                <span class="scroll-label">
+                    SCROLL TO DISCOVER &darr;
+                </span>
+            </div>
+        </section>
+        <section class="prayer-section" id="prayer-times">
+            <div class="shell">
+                <div class="section-heading">
+                    <div>
+                        <div class="section-eyebrow">
+                            CONNECTED TO THE COMMUNITY
+                        </div>
+                        <h2>
+                            Daily Prayer
+                            <em>
+                                Times
+                            </em>
+                        </h2>
+                        <p>
+                            Today's prayer schedule for Pagoh, Muar &mdash; JAKIM zone JHR04.
+                        </p>
+                    </div>
+                    <div class="prayer-meta">
+                        <span id="date-label">
+                            Loading date&hellip;
+                        </span>
+                        <span class="zone-tag">
+                            ◉ JHR04 &middot; MUAR
+                        </span>
+                    </div>
+                </div>
+                <div aria-live="polite" class="prayer-grid" id="prayer-grid">
+                    <article class="prayer-card">
+                        <span class="prayer-index">
+                            01
+                        </span>
+                        <span class="prayer-icon">
+                            ☾
+                        </span>
+                        <h3>
+                            Subuh
+                        </h3>
+                        <strong id="time-fajr">
+                            --:--
+                        </strong>
+                        <span class="prayer-en">
+                            Fajr
+                        </span>
+                    </article>
+                    <article class="prayer-card">
+                        <span class="prayer-index">
+                            02
+                        </span>
+                        <span class="prayer-icon">
+                            ☀
+                        </span>
+                        <h3>
+                            Zohor
+                        </h3>
+                        <strong id="time-dhuhr">
+                            --:--
+                        </strong>
+                        <span class="prayer-en">
+                            Dhuhr
+                        </span>
+                    </article>
+                    <article class="prayer-card">
+                        <span class="prayer-index">
+                            03
+                        </span>
+                        <span class="prayer-icon">
+                            ◐
+                        </span>
+                        <h3>
+                            Asar
+                        </h3>
+                        <strong id="time-asr">
+                            --:--
+                        </strong>
+                        <span class="prayer-en">
+                            Asr
+                        </span>
+                    </article>
+                    <article class="prayer-card">
+                        <span class="prayer-index">
+                            04
+                        </span>
+                        <span class="prayer-icon">
+                            ◒
+                        </span>
+                        <h3>
+                            Maghrib
+                        </h3>
+                        <strong id="time-maghrib">
+                            --:--
+                        </strong>
+                        <span class="prayer-en">
+                            Maghrib
+                        </span>
+                    </article>
+                    <article class="prayer-card">
+                        <span class="prayer-index">
+                            05
+                        </span>
+                        <span class="prayer-icon">
+                            ✧
+                        </span>
+                        <h3>
+                            Isyak
+                        </h3>
+                        <strong id="time-isha">
+                            --:--
+                        </strong>
+                        <span class="prayer-en">
+                            Isha
+                        </span>
+                    </article>
+                </div>
+                <div class="prayer-footer">
+                    <span id="prayer-status" role="status">
+                        Fetching prayer times&hellip;
+                    </span>
+                    <button class="text-button" id="refresh-prayers" type="button">
+                        &orarr; Refresh times
+                    </button>
+                </div>
+            </div>
+        </section>
+        <section class="about-section" id="about">
+            <div class="shell about-grid">
+                <div class="about-media">
+                    <div aria-label="Mosque photo gallery" class="photo-carousel">
+                        <img alt="Photograph of Haji Mohammad Yassin Mosque" class="mosque-photo active"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque-1.jpg" />
+                        <img alt="Another view of the mosque" class="mosque-photo"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque-2.jpg" />
+                        <img alt="Architectural details of the mosque" class="mosque-photo"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque-3.jpg" />
+                        <div class="photo-placeholder" id="photo-placeholder">
+                            <span>
+                                HMY
+                            </span>
+                            <p>
+                                Add your mosque photos in
+                                <code>
           assets/mosque-1.jpg
          </code>
-         , etc.
-        </p>
-       </div>
-       <div class="photo-overlay">
-        <span>
-         THE REAL PLACE BEHIND THE EXPERIENCE
-        </span>
-        <strong>
-         Pagoh, Johor
-        </strong>
-       </div>
-       <div class="photo-controls">
-        <button aria-label="Previous photo" id="photo-prev" type="button">
-         &larr;
-        </button>
-        <span id="photo-count">
-         01 / 03
-        </span>
-        <button aria-label="Next photo" id="photo-next" type="button">
-         &rarr;
-        </button>
-       </div>
-      </div>
-      <div class="media-caption">
-       <span class="caption-line">
-       </span>
-       A PLACE WORTH EXPLORING
-      </div>
-     </div>
-     <div class="about-copy">
-      <div class="section-eyebrow">
-       THE STORY BEHIND THE EXPERIENCE
-      </div>
-      <h2>
-       A real landmark.
-       <br/>
-       <em>
-        A new perspective.
-       </em>
-      </h2>
-      <p class="about-lead">
-       Discover Haji Mohammad Yassin Mosque in Pagoh, Muar, through a digital experience designed to make its architecture easier to explore.
-      </p>
-      <p>
-       Move between an interactive 3D model, photographs of the actual mosque, and an augmented reality experience. Historical and architectural details can be added once confirmed by the project team.
-      </p>
-      <div class="feature-list">
-       <div>
-        <span>
-         01
-        </span>
-        <div>
-         <strong>
-          Interactive architecture
-         </strong>
-         <small>
-          Rotate the 3D mosque and select annotations to explore its features.
-         </small>
+                                , etc.
+                            </p>
+                        </div>
+                        <div class="photo-overlay">
+                            <span>
+                                THE REAL PLACE BEHIND THE EXPERIENCE
+                            </span>
+                            <strong>
+                                Pagoh, Johor
+                            </strong>
+                        </div>
+                        <div class="photo-controls">
+                            <button aria-label="Previous photo" id="photo-prev" type="button">
+                                &larr;
+                            </button>
+                            <span id="photo-count">
+                                01 / 03
+                            </span>
+                            <button aria-label="Next photo" id="photo-next" type="button">
+                                &rarr;
+                            </button>
+                        </div>
+                    </div>
+                    <div class="media-caption">
+                        <span class="caption-line">
+                        </span>
+                        A PLACE WORTH EXPLORING
+                    </div>
+                </div>
+                <div class="about-copy">
+                    <div class="section-eyebrow">
+                        THE STORY BEHIND THE EXPERIENCE
+                    </div>
+                    <h2>
+                        A real landmark.
+                        <br />
+                        <em>
+                            A new perspective.
+                        </em>
+                    </h2>
+                    <p class="about-lead">
+                        Discover Haji Mohammad Yassin Mosque in Pagoh, Muar, through a digital experience designed to
+                        make its architecture easier to explore.
+                    </p>
+                    <p>
+                        Move between an interactive 3D model, photographs of the actual mosque, and an augmented reality
+                        experience. Historical and architectural details can be added once confirmed by the project
+                        team.
+                    </p>
+                    <div class="feature-list">
+                        <div>
+                            <span>
+                                01
+                            </span>
+                            <div>
+                                <strong>
+                                    Interactive architecture
+                                </strong>
+                                <small>
+                                    Rotate the 3D mosque and select annotations to explore its features.
+                                </small>
+                            </div>
+                        </div>
+                        <div>
+                            <span>
+                                02
+                            </span>
+                            <div>
+                                <strong>
+                                    Authentic photography
+                                </strong>
+                                <small>
+                                    See the real building alongside its digital counterpart.
+                                </small>
+                            </div>
+                        </div>
+                        <div>
+                            <span>
+                                03
+                            </span>
+                            <div>
+                                <strong>
+                                    Augmented reality
+                                </strong>
+                                <small>
+                                    Take the experience beyond the browser with AR.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="inline-link" href="gallery.html">
+                        Discover the gallery
+                        <span>
+                            &nearrow;
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section class="cta-section">
+            <div class="shell cta-inner">
+                <div>
+                    <div class="section-eyebrow">
+                        CONTINUE THE JOURNEY
+                    </div>
+                    <h2>
+                        Ready to explore
+                        <em>
+                            further?
+                        </em>
+                    </h2>
+                </div>
+                <div class="cta-actions">
+                    <a class="btn btn-gold" href="gallery.html">
+                        View Gallery &nearrow;
+                    </a>
+                    <a class="btn btn-outline" href="ar-cam.html">
+                        Try AR Cam &nearrow;
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="shell footer-inner">
+            <div>
+                <strong>
+                    HAJI MOHAMMAD YASSIN &mdash; VR
+                </strong>
+                <small>
+                    A digital heritage experience &middot; Pagoh, Muar
+                </small>
+            </div>
+            <span>
+                &copy;
+                <span id="year">
+                </span>
+                Haji Mohammad Yassin &ndash; VR
+            </span>
         </div>
-       </div>
-       <div>
-        <span>
-         02
-        </span>
-        <div>
-         <strong>
-          Authentic photography
-         </strong>
-         <small>
-          See the real building alongside its digital counterpart.
-         </small>
-        </div>
-       </div>
-       <div>
-        <span>
-         03
-        </span>
-        <div>
-         <strong>
-          Augmented reality
-         </strong>
-         <small>
-          Take the experience beyond the browser with AR.
-         </small>
-        </div>
-       </div>
-      </div>
-      <a class="inline-link" href="gallery.html">
-       Discover the gallery
-       <span>
-        &nearrow;
-       </span>
-      </a>
-     </div>
-    </div>
-   </section>
-   <section class="cta-section">
-    <div class="shell cta-inner">
-     <div>
-      <div class="section-eyebrow">
-       CONTINUE THE JOURNEY
-      </div>
-      <h2>
-       Ready to explore
-       <em>
-        further?
-       </em>
-      </h2>
-     </div>
-     <div class="cta-actions">
-      <a class="btn btn-gold" href="gallery.html">
-       View Gallery &nearrow;
-      </a>
-      <a class="btn btn-outline" href="ar-cam.html">
-       Try AR Cam &nearrow;
-      </a>
-     </div>
-    </div>
-   </section>
-  </main>
-  <footer class="footer">
-   <div class="shell footer-inner">
-    <div>
-     <strong>
-      HAJI MOHAMMAD YASSIN &mdash; VR
-     </strong>
-     <small>
-      A digital heritage experience &middot; Pagoh, Muar
-     </small>
-    </div>
-    <span>
-     &copy;
-     <span id="year">
-     </span>
-     Haji Mohammad Yassin &ndash; VR
-    </span>
-   </div>
-  </footer>
- </body>
+    </footer>
+</body>
+
 </html>

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mosque Hotspot Coordinate Tester</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
+  <style>
+    :root { color-scheme: dark; font-family: Arial, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b211e; color: #f3f0e8; }
+    header { padding: 17px 24px; border-bottom: 1px solid #58756b; }
+    h1 { font-size: 20px; margin: 0 0 5px; } p { margin: 5px 0; color: #b7cbc3; font-size: 13px; line-height: 1.5; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; padding: 16px; min-height: calc(100vh - 84px); }
+    .viewer-panel { min-width: 0; display: flex; flex-direction: column; background: linear-gradient(155deg,#294c49,#152e2c 48%,#0b201e); border: 1px solid #58756b; border-radius: 12px; overflow: hidden; }
+    .viewer-top,.viewer-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px; }
+    .viewer-top { font-size: 12px; color: #e1bd78; letter-spacing: .06em; }
+    #mosque-model { width: 100%; flex: 1; height: 520px; min-height: 430px; --poster-color: transparent; }
+    .viewer-bottom { border-top: 1px solid #ffffff24; font-size: 12px; color: #c2d2ca; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, select, input[type=number] { font: inherit; }
+    button { cursor: pointer; padding: 10px 12px; background: #28554b; border: 1px solid #8b9f8b; color: white; border-radius: 7px; }
+    button:hover { background: #387466; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #e1bd78; outline-offset: 2px; }
+    aside { background: #17332e; border: 1px solid #58756b; border-radius: 12px; padding: 18px; align-self: start; }
+    h2 { font-size: 18px; margin: 0 0 12px; }
+    label { display: block; font-size: 13px; margin-bottom: 7px; color: #d4e1d9; }
+    select { width: 100%; padding: 10px; background: #0d2925; color: white; border: 1px solid #7c958b; border-radius: 6px; }
+    .axis { margin: 20px 0; }
+    .axis-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .axis-head label { margin: 0; font-weight: bold; }
+    input[type=number] { width: 125px; background: #0d2925; color: white; border: 1px solid #7c958b; border-radius: 6px; padding: 8px; }
+    input[type=range] { width: 100%; accent-color: #e1bd78; cursor: pointer; }
+    .position { font-family: ui-monospace, monospace; padding: 13px; margin: 14px 0; background: #0a211e; color: #f5d79d; border-radius: 7px; word-break: break-word; }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .buttons button { flex: 1; }
+    .status { min-height: 20px; margin-top: 12px; }
+    /* Let model-viewer own the hotspot transform (as in its official demo). */
+    .hotspot { display: block; position: relative; width: 20px; height: 20px; border: 0; border-radius: 50%; background: #e1bd78; color: #17342f; padding: 0; box-sizing: border-box; box-shadow: 0 0 0 2px white, 0 3px 12px #0008; cursor: pointer; }
+    .hotspot-pin { display: grid; place-items: center; width: 100%; height: 100%; font-weight: bold; line-height: 1; pointer-events: none; }
+    .hotspot-label { position: absolute; top: 50%; left: calc(100% + 10px); transform: translateY(-50%); background: rgba(10,35,31,.9); color: white; padding: 7px 10px; border-radius: 7px; font-size: 11px; white-space: nowrap; pointer-events: none; }
+    .hotspot.selected { background: #ff784d; box-shadow: 0 0 0 2px white, 0 0 0 6px #ff784d66; }
+    .viewer-panel:fullscreen { width: 100%; height: 100%; border-radius: 0; }
+    .viewer-panel:fullscreen #mosque-model { flex: 1; min-height: 0; height: auto; }
+    @media (max-width: 850px) { main { grid-template-columns: 1fr; } #mosque-model { height: 440px; min-height: 380px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Mosque Hotspot Coordinate Tester</h1>
+  <p>Independent test page. Select a hotspot, move its X/Y/Z coordinates, and copy the final position into your main index.html.</p>
+</header>
+<main>
+  <section class="viewer-panel" id="viewer-panel">
+    <div class="viewer-top"><span>INTERACTIVE 3D EXPERIENCE</span><span id="rotation-status">AUTO ROTATE</span></div>
+    <model-viewer id="mosque-model" src="models/mosque.glb" alt="Interactive 3D model of Haji Mohammad Yassin Mosque"
+      auto-rotate auto-rotate-delay="0" camera-controls camera-orbit="35deg 68deg auto"
+      environment-image="neutral" exposure="0.85" interaction-prompt="auto" loading="eager"
+      max-camera-orbit="auto 90deg auto" min-camera-orbit="auto 15deg auto"
+      rotation-per-second="12deg" shadow-intensity="0.9" shadow-softness="1"
+      tone-mapping="neutral" touch-action="pan-y">
+      <button class="hotspot selected" slot="hotspot-entrance" data-annotation="entrance" data-position="-2.38m -13.2m 1.33m" aria-label="Main Entrance"><span class="hotspot-pin">+</span><span class="hotspot-label">Main Entrance</span></button>
+      <button class="hotspot" slot="hotspot-roof" data-annotation="roof" data-position="-2.38m -10.5m -4.32m" aria-label="Roof Details"><span class="hotspot-pin">+</span><span class="hotspot-label">Roof Details</span></button>
+      <button class="hotspot" slot="hotspot-hall" data-annotation="hall" data-position="0m -12.5m -4.32m" aria-label="Prayer Hall"><span class="hotspot-pin">+</span><span class="hotspot-label">Prayer Hall</span></button>
+    </model-viewer>
+    <div class="viewer-bottom">
+      <span>↔ Drag to rotate · ⊕ Scroll to zoom</span>
+      <div class="actions">
+        <button id="toggle-rotation" type="button">⏸ Pause rotation</button>
+        <button id="reset-camera" type="button">↶ Reset view</button>
+        <button id="toggle-fullscreen" type="button">⛶ Fullscreen</button>
+      </div>
+    </div>
+  </section>
+  <aside>
+    <h2>Hotspot position</h2>
+    <label for="hotspot-select">Select hotspot</label>
+    <select id="hotspot-select">
+      <option value="entrance">Main Entrance</option>
+      <option value="roof">Roof Details</option>
+      <option value="hall">Prayer Hall</option>
+    </select>
+    <p>Changing a slider updates the hotspot on the model instantly. Number boxes allow exact coordinates.</p>
+    <div id="axis-controls"></div>
+    <div class="position" id="position-output" aria-live="polite"></div>
+    <div class="buttons">
+      <button id="copy-position" type="button">Copy position</button>
+      <button id="reset-hotspot" type="button">Reset hotspot</button>
+    </div>
+    <p class="status" id="status" role="status">Loading model…</p>
+    <p>Tip: pause rotation while positioning. Changes are temporary and will reset on refresh.</p>
+  </aside>
+</main>
+<script>
+(() => {
+  'use strict';
+  const model = document.querySelector('#mosque-model');
+  const panel = document.querySelector('#viewer-panel');
+  const rotationButton = document.querySelector('#toggle-rotation');
+  const status = document.querySelector('#status');
+  const select = document.querySelector('#hotspot-select');
+  const axisControls = document.querySelector('#axis-controls');
+  const output = document.querySelector('#position-output');
+  const initial = {
+    entrance: [-2.38, -13.2, 1.33],
+    roof: [-2.38, -10.5, -4.32],
+    hall: [0, -12.5, -4.32]
+  };
+  const positions = Object.fromEntries(Object.entries(initial).map(([key, values]) => [key, [...values]]));
+  const names = ['X', 'Y', 'Z'];
+  const controls = [];
+  let userWantsRotation = true;
+  let modelLoaded = false;
+  const CAMERA_ZOOM_FACTOR = 0.82;
+  const hotspot = key => model.querySelector(`[data-annotation="${key}"]`);
+  const format = n => Number(n.toFixed(3)).toString();
+  const positionText = key => positions[key].map(n => `${format(n)}m`).join(' ');
+
+  function updateHotspot(key) {
+    const element = hotspot(key);
+    if (element) {
+      const position = positionText(key);
+      element.setAttribute('data-position', position);
+      // model-viewer caches hotspot coordinates after loading; update its live scene.
+      if (modelLoaded && typeof model.updateHotspot === 'function') {
+        model.updateHotspot({ name: `hotspot-${key}`, position });
+      }
+    }
+    if (select.value === key) output.textContent = positionText(key);
+  }
+  function updateControls() {
+    const key = select.value;
+    hotspot('entrance').classList.toggle('selected', key === 'entrance');
+    hotspot('roof').classList.toggle('selected', key === 'roof');
+    hotspot('hall').classList.toggle('selected', key === 'hall');
+    controls.forEach(({range, number}, i) => {
+      const v = positions[key][i];
+      range.value = v;
+      number.value = v;
+    });
+    output.textContent = positionText(key);
+  }
+  function setAxis(i, raw) {
+    const value = Number(raw);
+    if (!Number.isFinite(value) || raw === '') return;
+    const key = select.value;
+    positions[key][i] = value;
+    const {range, number} = controls[i];
+    if (value < Number(range.min)) range.min = Math.floor(value - 5);
+    if (value > Number(range.max)) range.max = Math.ceil(value + 5);
+    range.value = value;
+    number.value = value;
+    updateHotspot(key);
+  }
+  names.forEach((name, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'axis';
+    const head = document.createElement('div');
+    head.className = 'axis-head';
+    const label = document.createElement('label');
+    label.textContent = `${name} coordinate (m)`;
+    const number = document.createElement('input');
+    number.type = 'number'; number.step = '0.01'; number.id = `axis-${name}`;
+    label.htmlFor = number.id;
+    const range = document.createElement('input');
+    range.type = 'range'; range.min = '-40'; range.max = '40'; range.step = '0.01';
+    range.setAttribute('aria-label', `${name} coordinate slider`);
+    range.addEventListener('input', () => setAxis(i, range.value));
+    number.addEventListener('input', () => setAxis(i, number.value));
+    head.append(label, number); wrapper.append(head, range); axisControls.append(wrapper);
+    controls.push({range, number});
+  });
+  select.addEventListener('change', updateControls);
+  for (const key of Object.keys(initial)) {
+    hotspot(key).addEventListener('click', event => {
+      event.stopPropagation(); select.value = key; updateControls();
+      status.textContent = `Selected ${select.selectedOptions[0].textContent}.`;
+    });
+  }
+  document.querySelector('#reset-hotspot').addEventListener('click', () => {
+    const key = select.value; positions[key] = [...initial[key]];
+    updateHotspot(key); updateControls(); status.textContent = 'Hotspot restored to its starting position.';
+  });
+  document.querySelector('#copy-position').addEventListener('click', async () => {
+    const value = positionText(select.value);
+    try {
+      await navigator.clipboard.writeText(value);
+      status.textContent = `Copied: ${value}`;
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = value; document.body.append(field); field.select();
+      const success = document.execCommand('copy'); field.remove();
+      status.textContent = success ? `Copied: ${value}` : `Copy manually from the position box: ${value}`;
+    }
+  });
+  function syncRotation() {
+    model.autoRotate = userWantsRotation;
+    rotationButton.textContent = userWantsRotation ? '⏸ Pause rotation' : '▶ Play rotation';
+    document.querySelector('#rotation-status').textContent = userWantsRotation ? 'AUTO ROTATE' : 'ROTATION PAUSED';
+  }
+  rotationButton.addEventListener('click', () => { userWantsRotation = !userWantsRotation; syncRotation(); });
+  syncRotation();
+  function setDefaultCamera() {
+    if (!modelLoaded) return;
+    // Match the camera framing logic in the current script.js.
+    model.cameraOrbit = '35deg 68deg auto';
+    model.fieldOfView = 'auto';
+    const d = model.getDimensions();
+    const maxDimension = Math.max(d.x, d.y, d.z);
+    model.cameraOrbit = `35deg 68deg ${maxDimension * 1.5 * CAMERA_ZOOM_FACTOR}m`;
+    model.jumpCameraToGoal();
+  }
+  document.querySelector('#reset-camera').addEventListener('click', setDefaultCamera);
+  model.addEventListener('load', () => {
+    modelLoaded = true;
+    Object.keys(positions).forEach(updateHotspot);
+    setDefaultCamera();
+    status.textContent = 'Model loaded. Move the sliders to position a hotspot.';
+  });
+  model.addEventListener('error', () => {
+    status.textContent = 'Model failed to load. Put test.html beside index.html and check models/mosque.glb. Use a local server, not file://.';
+  });
+  const fullscreenButton = document.querySelector('#toggle-fullscreen');
+  fullscreenButton.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement === panel) await document.exitFullscreen();
+      else await panel.requestFullscreen();
+    } catch (error) { status.textContent = `Fullscreen unavailable: ${error.message}`; }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    fullscreenButton.textContent = document.fullscreenElement === panel ? '⤢ Exit fullscreen' : '⛶ Fullscreen';
+  });
+  updateControls();
+})();
+</script>
+</body>
+</html>
