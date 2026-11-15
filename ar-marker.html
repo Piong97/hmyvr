@@ -1,60 +1,48 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c2724">
+  <title>NFT Image AR | Haji Mohammad Yassin VR</title>
 
-    <title>Marker AR | Haji Mohammad Yassin VR</title>
+  <!-- NFT build: do NOT also load aframe-ar.js (Hiro marker build). -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar-nft.js"></script>
 
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
-
-    <style>
-        html, body {
-            margin: 0;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-
-        .back-button {
-            position: fixed;
-            top: 16px;
-            left: 16px;
-            z-index: 99999;
-            padding: 12px 18px;
-            background: rgba(7, 29, 26, 0.9);
-            border: 1px solid #d7b777;
-            border-radius: 8px;
-            color: white;
-            font: 600 14px Arial, sans-serif;
-            text-decoration: none;
-        }
-    </style>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #071d1a; }
+    .back-button { position: fixed; z-index: 10001; top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left)); padding: 12px 18px; border: 1px solid #d7b777; border-radius: 8px; background: rgba(7,29,26,.9); color: white; font: 600 14px Arial,sans-serif; text-decoration: none; }
+    .arjs-loader { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(7,29,26,.9); color: white; font: 15px Arial,sans-serif; text-align: center; padding: 24px; }
+  </style>
 </head>
-
 <body>
-    <a href="ar-cam.html" class="back-button">← Back</a>
+  <a class="back-button" href="ar-cam.html">← Back</a>
+  <div class="arjs-loader"><div>Loading NFT image tracking…<br>Please allow camera access.</div></div>
 
-    <a-scene
-        embedded
-        vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true;"
-        arjs="trackingMethod: best; sourceType: webcam; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;"
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; precision: medium;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
-        <a-marker preset="hiro">
-            <a-box
-                position="0 0.5 0"
-                width="1"
-                height="1"
-                depth="1"
-                color="red">
-            </a-box>
-        </a-marker>
+    <!-- First test: AR.js sample T-Rex image descriptors. This is NOT the Hiro marker.
+         Later, replace the URL with a locally hosted descriptor prefix,
+         e.g. url="nft/mosque" for nft/mosque.fset, .fset3 and .iset. -->
+    <a-nft
+      type="nft"
+      url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance="0.01"
+      smoothThreshold="5">
 
-        <a-entity camera></a-entity>
-    </a-scene>
+      <!-- Diagnostic geometry only. NFT coordinates differ from Hiro marker units. -->
+      <a-box position="50 100 0" width="100" height="100" depth="100"
+             material="color: #e54848; shader: flat;"></a-box>
+    </a-nft>
+
+    <a-entity camera></a-entity>
+  </a-scene>
 </body>
 </html>

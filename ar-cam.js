@@ -14,19 +14,30 @@ let currentMode = null;
 
 // ===== Footer Year =====
 
-$('#year').textContent = new Date().getFullYear();
+const year = $('#year');
+
+if (year) {
+    year.textContent = new Date().getFullYear();
+}
 
 // ===== Mobile Navigation =====
 
-$('#menu-toggle').addEventListener('click', () => {
-    const nav = $('#primary-nav');
-    const open = nav.classList.toggle('open');
+const menuToggle = $('#menu-toggle');
 
-    $('#menu-toggle').setAttribute(
-        'aria-expanded',
-        String(open)
-    );
-});
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+        const nav = $('#primary-nav');
+
+        if (!nav) return;
+
+        const open = nav.classList.toggle('open');
+
+        menuToggle.setAttribute(
+            'aria-expanded',
+            String(open)
+        );
+    });
+}
 
 // ===== Surface AR Camera Framing =====
 
@@ -53,12 +64,12 @@ function setSurfaceCamera() {
 
 // ===== Surface Model Events =====
 
-surfaceModel.addEventListener('load', () => {
+surfaceModel?.addEventListener('load', () => {
     setSurfaceCamera();
 });
 
-surfaceModel.addEventListener('error', () => {
-    if (currentMode === 'surface') {
+surfaceModel?.addEventListener('error', () => {
+    if (currentMode === 'surface' && status) {
         status.textContent =
             'Could not load mosque.glb. Please check the model file.';
     }
@@ -69,17 +80,19 @@ surfaceModel.addEventListener('error', () => {
 function openSurfaceAR() {
     currentMode = 'surface';
 
-    choices.hidden = true;
-    workspace.hidden = false;
+    if (choices) choices.hidden = true;
+    if (workspace) workspace.hidden = false;
 
-    status.textContent =
-        'Rotate the model or select View Mosque in AR on a compatible phone.';
+    if (status) {
+        status.textContent =
+            'Rotate the model or select View Mosque in AR on a compatible phone.';
+    }
 
-    if (surfaceModel.loaded) {
+    if (surfaceModel?.loaded) {
         setSurfaceCamera();
     }
 
-    workspace.scrollIntoView({
+    workspace?.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
     });
@@ -89,17 +102,17 @@ function openSurfaceAR() {
 
 document.querySelector(
     '[data-mode="surface"]'
-).addEventListener('click', openSurfaceAR);
+)?.addEventListener('click', openSurfaceAR);
 
 // ===== Back to Mode Selection =====
 
-$('#ar-back').addEventListener('click', () => {
+$('#ar-back')?.addEventListener('click', () => {
     currentMode = null;
 
-    workspace.hidden = true;
-    choices.hidden = false;
+    if (workspace) workspace.hidden = true;
+    if (choices) choices.hidden = false;
 
-    choices.scrollIntoView({
+    choices?.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
     });
