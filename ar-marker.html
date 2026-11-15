@@ -1,120 +1,296 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <title>NFT AR | Haji Mohammad Yassin VR</title>
+    <title>MindAR | Haji Mohammad Yassin VR</title>
 
-  <!-- Latest A-Frame: test compatibility with AR.js NFT -->
-  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+    <!-- A-Frame + MindAR -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Keep the AR.js NFT build from our working setup -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-  <style>
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+        .back-button {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            left: 16px;
+            z-index: 10001;
+            padding: 12px 18px;
+            border: 1px solid #d7b777;
+            border-radius: 8px;
+            background: rgba(7, 29, 26, 0.9);
+            color: white;
+            font: 600 14px Arial, sans-serif;
+            text-decoration: none;
+        }
 
-    .back-button {
-      position: fixed;
-      top: 16px;
-      left: 16px;
-      z-index: 10001;
-      padding: 12px 18px;
-      background: rgba(7, 29, 26, 0.9);
-      border: 1px solid #d7b777;
-      border-radius: 8px;
-      color: white;
-      font: 600 14px Arial, sans-serif;
-      text-decoration: none;
-    }
+        #status {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            max-width: 85%;
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            font: 14px Arial, sans-serif;
+            text-align: center;
+            pointer-events: none;
+        }
 
-    #status {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10001;
-      width: max-content;
-      max-width: 85%;
-      padding: 10px 16px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.75);
-      color: white;
-      font: 14px Arial, sans-serif;
-      text-align: center;
-    }
-  </style>
+        #reset-model {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            right: 16px;
+            z-index: 10001;
+            padding: 12px 16px;
+            border: 1px solid #d7b777;
+            border-radius: 8px;
+            background: rgba(7, 29, 26, 0.9);
+            color: white;
+            font: 600 14px Arial, sans-serif;
+            cursor: pointer;
+        }
+
+        html, body {
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+    </style>
 </head>
 
 <body>
-  <a class="back-button" href="ar-cam.html">← Back</a>
 
-  <div id="status" role="status">
-    Starting NFT camera...
-  </div>
+    <a href="ar-cam.html" class="back-button">
+        ← Back
+    </a>
 
-  <a-scene
-    embedded
-    vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true;"
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+    <button id="reset-model" type="button">
+        ↺ Reset View
+    </button>
 
-    <a-nft
-      id="nft-marker"
-      type="nft"
-      url="nft/mosque"
-      emitevents="true"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance="0.01"
-      smoothThreshold="5">
+    <div id="status" role="status">
+        Starting MindAR...
+    </div>
 
-      <a-entity
-        gltf-model="url(models/mosque.glb)"
-        position="50 100 0"
-        rotation="0 0 0"
-        scale="5 5 5">
-    </a-entity>
+    <a-scene mindar-image="
+        imageTargetSrc: nft/mosque.mind;
+        filterMinCF: 0.0001;
+        filterBeta: 0.001;
+        warmupTolerance: 3;
+        missTolerance: 10;
+        " 
+        embedded color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
 
-    </a-nft>
+        <a-camera position="0 0 0" look-controls="enabled: false">
+        </a-camera>
 
-    <a-entity camera></a-entity>
-  </a-scene>
+        <a-entity
+            id="image-target"
+            mindar-image-target="targetIndex: 0">
 
-  <script>
-    const status = document.getElementById('status');
-    const marker = document.getElementById('nft-marker');
+            <a-entity
+                id="model-controller"
+                position="0 0 0"
+                rotation="0 0 0"
+                scale="1 1 1">
+            
+                <a-entity
+                    id="mosque-model"
+                    gltf-model="url(models/mosque.glb)"
+                    position="0.5 0 0"
+                    rotation="90 0 0"
+                    scale="0.1 0.1 0.1">
+                </a-entity>
+            
+            </a-entity>
 
-    window.addEventListener('arjs-nft-loaded', () => {
-      status.textContent =
-        'NFT ready — scan the reference image';
-    });
+        </a-entity>
 
-    marker.addEventListener('markerFound', () => {
-      status.textContent = 'Image detected!';
-    });
+    </a-scene>
 
-    marker.addEventListener('markerLost', () => {
-      status.textContent =
-        'Looking for reference image...';
-    });
+    <script>
+        const status = document.getElementById('status');
+        const scene = document.querySelector('a-scene');
+        const target = document.getElementById('image-target');
 
-    window.addEventListener('error', event => {
-      status.textContent = 'Error: ' + event.message;
-    });
+        scene.addEventListener('arReady', () => {
+            status.textContent =
+                'Camera ready — scan the reference image';
+        });
 
-    window.addEventListener('unhandledrejection', event => {
-      status.textContent =
-        'AR error: ' + String(event.reason);
-    });
-  </script>
+        scene.addEventListener('arError', () => {
+            status.textContent =
+                'MindAR error — check camera permission and target file';
+        });
+
+        target.addEventListener('targetFound', () => {
+            status.textContent = 'TRACKING ACTIVE — Mosque visible';
+            status.style.background = 'rgba(0, 110, 50, 0.85)';
+        });
+
+        target.addEventListener('targetLost', () => {
+            status.textContent = 'TRACKING LOST — Scan image again';
+            status.style.background = 'rgba(180, 40, 30, 0.85)';
+        });
+
+        window.addEventListener('error', event => {
+            status.textContent =
+                'Error: ' + event.message;
+        });
+
+
+        const controller = document.getElementById('model-controller');
+        const resetButton = document.getElementById('reset-model');
+
+        let lastX = 0;
+        let lastY = 0;
+        let lastDistance = 0;
+        let lastMidX = 0;
+        let lastMidY = 0;
+
+        let zoom = 1;
+        let rotationY = 0;
+        let rotationX = 0;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        const MIN_ZOOM = 0.3;
+        const MAX_ZOOM = 5;
+
+        function distance(a, b) {
+        return Math.hypot(
+            a.clientX - b.clientX,
+            a.clientY - b.clientY
+        );
+        }
+
+        function midpoint(a, b) {
+        return {
+            x: (a.clientX + b.clientX) / 2,
+            y: (a.clientY + b.clientY) / 2
+        };
+        }
+
+        function updateModel() {
+        controller.object3D.rotation.set(
+            rotationX,
+            rotationY,
+            0
+        );
+
+        controller.object3D.scale.setScalar(zoom);
+
+        controller.object3D.position.set(
+            offsetX,
+            offsetY,
+            0
+        );
+        }
+
+        document.addEventListener('touchstart', event => {
+        if (event.target.closest('button, a')) return;
+
+        if (event.touches.length === 1) {
+            lastX = event.touches[0].clientX;
+            lastY = event.touches[0].clientY;
+        }
+
+        if (event.touches.length === 2) {
+            lastDistance = distance(
+            event.touches[0],
+            event.touches[1]
+            );
+
+            const mid = midpoint(
+            event.touches[0],
+            event.touches[1]
+            );
+
+            lastMidX = mid.x;
+            lastMidY = mid.y;
+        }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', event => {
+        if (event.target.closest('button, a')) return;
+
+        if (event.cancelable) event.preventDefault();
+
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+
+            const dx = touch.clientX - lastX;
+            const dy = touch.clientY - lastY;
+
+            rotationY += dx * 0.008;
+            rotationX += dy * 0.008;
+
+            rotationX = Math.max(
+            -Math.PI / 3,
+            Math.min(Math.PI / 3, rotationX)
+            );
+
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+        }
+
+        if (event.touches.length === 2) {
+            const a = event.touches[0];
+            const b = event.touches[1];
+
+            const newDistance = distance(a, b);
+
+            if (lastDistance > 0) {
+            zoom *= newDistance / lastDistance;
+            zoom = Math.max(
+                MIN_ZOOM,
+                Math.min(MAX_ZOOM, zoom)
+            );
+            }
+
+            const mid = midpoint(a, b);
+
+            offsetX += (mid.x - lastMidX) * 0.002;
+            offsetY -= (mid.y - lastMidY) * 0.002;
+
+            lastDistance = newDistance;
+            lastMidX = mid.x;
+            lastMidY = mid.y;
+        }
+
+        updateModel();
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+        lastDistance = 0;
+        });
+
+        resetButton.addEventListener('click', () => {
+        zoom = 1;
+        rotationY = 0;
+        rotationX = 0;
+        offsetX = 0;
+        offsetY = 0;
+
+        updateModel();
+        });
+
+    </script>
+
 </body>
+
 </html>
