@@ -190,74 +190,131 @@ setInterval(()=>{if(todayMY() !== (window.__lastPrayerDay || (window.__lastPraye
    Static hotspots with clickable descriptions
    ========================================================== */
 
+
 const ANNOTATIONS = {
+  dome: {
+    title: "Dome",
+    description:
+      "The dome is a prominent architectural feature of the mosque, contributing to its distinctive silhouette. Observe its shape, proportions, and how it complements the overall structure of Haji Mohammad Yassin Mosque.",
+    image: "assets/annotation/1.png",
+    color: "#D4AF37" // Heritage Gold
+  },
+
   entrance: {
     title: "Main Entrance",
     description:
-      "Explore the main entrance of Haji Mohammad Yassin Mosque."
+      "The main entrance serves as a welcoming transition into the mosque. Explore its architectural arrangement, decorative details, and the way it connects the exterior surroundings with the interior spaces.",
+    image: "assets/annotation/2.png",
+    color: "#3B82F6" // Royal Blue
   },
 
-  roof: {
-    title: "Roof and Dome",
+  calligraphy: {
+    title: "Calligraphy and Wall Panels",
     description:
-      "Discover the mosque's distinctive roof and dome architecture."
+      "Islamic calligraphy combines artistic expression with spiritual meaning. Explore the mosque's decorative wall panels, paying attention to the lettering, composition, and ornamental elements that enrich its interior.",
+    image: "assets/annotation/3.png",
+    color: "#A855F7" // Amethyst Purple
   },
 
-  hall: {
-    title: "Prayer Hall",
+  geometry: {
+    title: "Geometry",
     description:
-      "Learn about the mosque's main prayer space."
+      "Geometric patterns are an important element of Islamic architectural design. Discover how repeating shapes, symmetry, and carefully arranged lines create visual harmony throughout the mosque's decorative features.",
+    image: "assets/annotation/4.png",
+    color: "#10B981" // Emerald Green
+  },
+
+  tiles: {
+    title: "Tiles and Colours",
+    description:
+      "Tiles and colour combinations contribute to the mosque's visual character. Take a closer look at the decorative surfaces, contrasting tones, and patterns that add texture and detail to its architectural design.",
+    image: "assets/annotation/5.png",
+    color: "#E8794A" // Terracotta Orange
   }
 };
 
 
 function initializeAnnotations() {
-  const panel = document.querySelector("#annotation-detail");
-  const title = document.querySelector("#annotation-title");
-  const description = document.querySelector("#annotation-text");
-  const closeButton = document.querySelector("#close-annotation");
+  const panel = document.querySelector('#annotation-detail');
+  const title = document.querySelector('#annotation-title');
+  const description = document.querySelector('#annotation-text');
+  const annotationImage = document.querySelector('#annotation-image');
+  const closeButton = document.querySelector('#close-annotation');
 
   if (!model || !panel) return;
 
-  const hotspots = model.querySelectorAll(".hotspot");
+  const hotspots = model.querySelectorAll('.hotspot');
 
   hotspots.forEach(hotspot => {
     hotspot.hidden = false;
 
-    hotspot.addEventListener("click", event => {
+    const key = hotspot.dataset.annotation;
+    const annotationData = ANNOTATIONS[key];
+
+    if (annotationData?.color) {
+      hotspot.style.setProperty(
+        '--annotation-color',
+        annotationData.color
+      );
+    }
+
+
+    hotspot.addEventListener('click', event => {
       event.stopPropagation();
 
       const key = hotspot.dataset.annotation;
       const annotation = ANNOTATIONS[key];
 
-      if (!annotation) return;
+      if (!annotation) {
+        console.warn('Annotation not found:', key);
+        return;
+      }
 
-      title.textContent = annotation.title;
-      description.textContent = annotation.description;
+      panel.style.setProperty(
+        '--annotation-color',
+        annotation.color
+      );
+
+      // Update title and description
+      if (title) {
+        title.textContent = annotation.title;
+      }
+
+      if (description) {
+        description.textContent = annotation.description;
+      }
+
+      // Update image
+      if (annotationImage) {
+        annotationImage.hidden = !annotation.image;
+        annotationImage.removeAttribute('src');
+
+        if (annotation.image) {
+          annotationImage.src = annotation.image;
+          annotationImage.alt = annotation.title;
+        }
+      }
 
       // Open annotation
       panel.hidden = false;
 
-      // Temporarily stop rotation
+      // Pause rotation while reading
       annotationOpen = true;
-
-      // Apply rotation state
       syncRotationState();
     });
   });
 
-  closeButton?.addEventListener("click", () => {
-
-    // Close annotation
+  // Close annotation
+  closeButton?.addEventListener('click', () => {
     panel.hidden = true;
 
-    // Remove temporary pause
     annotationOpen = false;
-
-    // Restore original Play/Pause preference
     syncRotationState();
   });
 }
+
+initializeAnnotations();
+
 
 initializeAnnotations();
 

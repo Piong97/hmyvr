@@ -1272,3 +1272,53 @@ model-viewer:not(:defined) > * {
 @media (max-width: 650px) {
     #surface-stage { height: 460px; }
 }
+
+
+/* Annotation image */
+
+.annotation-detail {
+    overflow: hidden;
+}
+
+.annotation-image {
+    display: block;
+    width: 100%;
+    max-height: 180px;
+    aspect-ratio: 16 / 9;
+
+    object-fit: contain;
+    object-position: center;
+
+    margin: 0 0 14px;
+    border-radius: 8px;
+
+    background: #102b25;
+}
+
+.annotation-image[hidden] {
+    display: none;
+}
+
+
+/* Individual annotation hotspot colors */
+
+.hotspot {
+  --annotation-color: #D4AF37;
+}
+
+.hotspot .hotspot-pin {
+  background: var(--annotation-color);
+  color: #10251f;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.hotspot .hotspot-label {
+  border: 1px solid var(--annotation-color);
+}
+
+/* Optional: Matching annotation popup */
+
+.annotation-detail {
+  border: 1px solid var(--annotation-color, #D4AF37);
+}

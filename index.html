@@ -8,7 +8,7 @@
     <meta content="Explore Haji Mohammad Yassin Mosque in Pagoh, Muar through an interactive VR heritage experience."
         name="description" />
     <title>
-        Haji Mohammad Yassin | VR Mosque Experience
+        Haji Mohammad Yassin Mosque | VR Mosque Experience
     </title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -25,7 +25,7 @@
 <body>
     <header class="site-header">
         <div class="shell nav">
-            <a aria-label="Haji Mohammad Yassin VR home" class="brand" href="index.html">
+            <a aria-label="Haji Mohammad Yassin Mosque VR home" class="brand" href="index.html">
                 <span class="logo-frame">
                     <img alt="VR logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false"
                         src="assets/logo_vr.png" />
@@ -35,7 +35,7 @@
                 </span>
                 <span class="brand-copy">
                     <strong>
-                        HAJI MOHAMMAD YASSIN
+                        HAJI MOHAMMAD YASSIN MOSQUE
                     </strong>
                     <small>
                         VIRTUAL MOSQUE EXPERIENCE
@@ -135,25 +135,39 @@
                         tone-mapping="neutral" touch-action="pan-y">
 
 
+                        <!-- Dome -->
+                        <button class="hotspot" slot="hotspot-dome" data-annotation="dome"
+                            data-position="-5.6m -12m -4.3m" aria-label="Dome">
+                            <span class="hotspot-pin">+</span>
+                            <span class="hotspot-label">Dome</span>
+                        </button>
+
                         <!-- Main Entrance -->
                         <button class="hotspot" slot="hotspot-entrance" data-annotation="entrance"
-                            data-position="4.5m -14.5m -4.5m" aria-label="Main Entrance">
+                            data-position="-6m -14.3m -7.15m" aria-label="Entrance Details">
                             <span class="hotspot-pin">+</span>
-                            <span class="hotspot-label">Main Entrance</span>
+                            <span class="hotspot-label">Entrance Details</span>
                         </button>
 
-                        <!-- Main Roof -->
-                        <button class="hotspot" slot="hotspot-roof" data-annotation="roof"
-                            data-position="-2.38m -10.5m -4.32m" aria-label="Roof Details">
+                        <!-- Calligraphy and Wall Panels -->
+                        <button class="hotspot" slot="hotspot-calligraphy" data-annotation="calligraphy"
+                            data-position="-7m -14.3m -3m" aria-label="Calligraphy and Wall Panels">
                             <span class="hotspot-pin">+</span>
-                            <span class="hotspot-label">Roof Details</span>
+                            <span class="hotspot-label">Calligraphy and Wall Panels</span>
                         </button>
 
-                        <!-- Prayer Hall -->
-                        <button class="hotspot" slot="hotspot-hall" data-annotation="hall"
-                            data-position="5m -12.5m -4.32m" aria-label="Prayer Hall">
+                        <!-- Geometry -->
+                        <button class="hotspot" slot="hotspot-geometry" data-annotation="geometry"
+                            data-position="2.3m -13.85m -1.56m" aria-label="Geometry">
                             <span class="hotspot-pin">+</span>
-                            <span class="hotspot-label">Prayer Hall</span>
+                            <span class="hotspot-label">Geometry</span>
+                        </button>
+
+                        <!-- Tiles and Colours -->
+                        <button class="hotspot" slot="hotspot-tiles" data-annotation="tiles"
+                            data-position="-2.9m -14m -6.5m" aria-label="Tiles and Colours">
+                            <span class="hotspot-pin">+</span>
+                            <span class="hotspot-label">Tiles and Colours</span>
                         </button>
 
 
@@ -180,6 +194,7 @@
                         <button aria-label="Close annotation" id="close-annotation" type="button">
                             &times;
                         </button>
+                        <img id="annotation-image" class="annotation-image" alt="" hidden/>
                         <strong id="annotation-title">
                         </strong>
                         <p id="annotation-text">
@@ -354,12 +369,15 @@
             <div class="shell about-grid">
                 <div class="about-media">
                     <div aria-label="Mosque photo gallery" class="photo-carousel">
-                        <img alt="Photograph of Haji Mohammad Yassin Mosque" class="mosque-photo active"
-                            onerror="this.classList.add('missing-photo')" src="assets/mosque-1.jpg" />
-                        <img alt="Another view of the mosque" class="mosque-photo"
-                            onerror="this.classList.add('missing-photo')" src="assets/mosque-2.jpg" />
-                        <img alt="Architectural details of the mosque" class="mosque-photo"
-                            onerror="this.classList.add('missing-photo')" src="assets/mosque-3.jpg" />
+                        <img class="mosque-photo active"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque0.jpg" />
+                        <img class="mosque-photo"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque1.jpg" />
+                        <img class="mosque-photo"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque2.jpg" />
+                        <img class="mosque-photo"
+                            onerror="this.classList.add('missing-photo')" src="assets/mosque3.jpg" />
+                        
                         <div class="photo-placeholder" id="photo-placeholder">
                             <span>
                                 HMY
@@ -496,7 +514,7 @@
         <div class="shell footer-inner">
             <div>
                 <strong>
-                    HAJI MOHAMMAD YASSIN &mdash; VR
+                    HAJI MOHAMMAD YASSIN MOSQUE &mdash; VR
                 </strong>
                 <small>
                     A digital heritage experience &middot; Pagoh, Muar
@@ -506,7 +524,7 @@
                 &copy;
                 <span id="year">
                 </span>
-                Haji Mohammad Yassin &ndash; VR
+                Haji Mohammad Yassin Mosque &ndash; VR
             </span>
         </div>
     </footer>

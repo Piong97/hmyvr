@@ -34,38 +34,50 @@ if (yearElement) {
 
 // Edit the English and Bahasa Melayu titles separately.
 
+
 const stories = [
   {
-    titleEn: 'Heritage Feature 01',
-    titleBm: 'Heritage Feature 01',
-    en: 'videos/sign-en-01.mp4',
-    bm: 'videos/sign-bm-01.mp4'
+    titleEn: 'Dome',
+    titleBm: 'Kubah',
+    posterEn: 'assets/poster/2.png',
+    posterBm: 'assets/poster/3.png',
+    en: 'assets/video/EN_Kubah.mp4',
+    bm: 'assets/video/BM_Kubah.mp4'
   },
   {
-    titleEn: 'Heritage Feature 02',
-    titleBm: 'Heritage Feature 02',
-    en: 'videos/sign-en-02.mp4',
-    bm: 'videos/sign-bm-02.mp4'
+    titleEn: 'Main Entrance',
+    titleBm: 'Pintu Utama',
+    posterEn: 'assets/poster/4.png',
+    posterBm: 'assets/poster/5.png',
+    en: 'assets/video/EN_Pintu.mp4',
+    bm: 'assets/video/BM_Pintu.mp4'
   },
   {
-    titleEn: 'Heritage Feature 03',
-    titleBm: 'Heritage Feature 03',
-    en: 'videos/sign-en-03.mp4',
-    bm: 'videos/sign-bm-03.mp4'
+    titleEn: 'Calligraphy and Wall Panels',
+    titleBm: 'Kaligrafi dan Panel Dinding',
+    posterEn: 'assets/poster/6.png',
+    posterBm: 'assets/poster/7.png',
+    en: 'assets/video/EN_Kali.mp4',
+    bm: 'assets/video/BM_Kali.mp4'
   },
   {
-    titleEn: 'Heritage Feature 04',
-    titleBm: 'Heritage Feature 04',
-    en: 'videos/sign-en-04.mp4',
-    bm: 'videos/sign-bm-04.mp4'
+    titleEn: 'Geometry',
+    titleBm: 'Geometri',
+    posterEn: 'assets/poster/8.png',
+    posterBm: 'assets/poster/9.png',
+    en: 'assets/video/EN_Geo.mp4',
+    bm: 'assets/video/BM_Geo.mp4'
   },
   {
-    titleEn: 'Heritage Feature 05',
-    titleBm: 'Heritage Feature 05',
-    en: 'videos/sign-en-05.mp4',
-    bm: 'videos/sign-bm-05.mp4'
+    titleEn: 'Tiles and Colours',
+    titleBm: 'Jubin dan Warna',
+    posterEn: 'assets/poster/10.png',
+    posterBm: 'assets/poster/11.png',
+    en: 'assets/video/EN_Jubin.mp4',
+    bm: 'assets/video/BM_Jubin.mp4'
   }
 ];
+
 
 let activeLanguage = 'en';
 
@@ -77,11 +89,16 @@ function createStoryCard(story, index) {
 
   const preview = document.createElement('div');
   preview.className = 'story-preview';
-
+  
   const video = document.createElement('video');
   video.controls = true;
   video.preload = 'none';
   video.playsInline = true;
+
+  // Select poster based on active language
+  video.poster = activeLanguage === 'bm'
+    ? story.posterBm
+    : story.posterEn;
 
   const title = activeLanguage === 'bm'
     ? story.titleBm
