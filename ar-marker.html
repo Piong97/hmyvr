@@ -1,48 +1,122 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0c2724">
-  <title>NFT Image AR | Haji Mohammad Yassin VR</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <!-- NFT build: do NOT also load aframe-ar.js (Hiro marker build). -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar-nft.js"></script>
+  <title>NFT AR | Haji Mohammad Yassin VR</title>
+
+  <!-- Latest A-Frame: test compatibility with AR.js NFT -->
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+
+  <!-- Keep the AR.js NFT build from our working setup -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
   <style>
-    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #071d1a; }
-    .back-button { position: fixed; z-index: 10001; top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left)); padding: 12px 18px; border: 1px solid #d7b777; border-radius: 8px; background: rgba(7,29,26,.9); color: white; font: 600 14px Arial,sans-serif; text-decoration: none; }
-    .arjs-loader { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(7,29,26,.9); color: white; font: 15px Arial,sans-serif; text-align: center; padding: 24px; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10001;
+      padding: 12px 18px;
+      background: rgba(7, 29, 26, 0.9);
+      border: 1px solid #d7b777;
+      border-radius: 8px;
+      color: white;
+      font: 600 14px Arial, sans-serif;
+      text-decoration: none;
+    }
+
+    #status {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10001;
+      width: max-content;
+      max-width: 85%;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      font: 14px Arial, sans-serif;
+      text-align: center;
+    }
   </style>
 </head>
+
 <body>
   <a class="back-button" href="ar-cam.html">← Back</a>
-  <div class="arjs-loader"><div>Loading NFT image tracking…<br>Please allow camera access.</div></div>
+
+  <div id="status" role="status">
+    Starting NFT camera...
+  </div>
 
   <a-scene
     embedded
     vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; precision: medium;"
+    renderer="logarithmicDepthBuffer: true;"
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
-    <!-- First test: AR.js sample T-Rex image descriptors. This is NOT the Hiro marker.
-         Later, replace the URL with a locally hosted descriptor prefix,
-         e.g. url="nft/mosque" for nft/mosque.fset, .fset3 and .iset. -->
     <a-nft
+      id="nft-marker"
       type="nft"
-      url="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex"
+      url="nft/mosque"
+      emitevents="true"
       smooth="true"
       smoothCount="10"
       smoothTolerance="0.01"
       smoothThreshold="5">
 
-      <!-- Diagnostic geometry only. NFT coordinates differ from Hiro marker units. -->
-      <a-box position="50 100 0" width="100" height="100" depth="100"
-             material="color: #e54848; shader: flat;"></a-box>
+      <!-- Red cube: keep this until tracking works -->
+      <a-box
+        position="50 100 0"
+        width="100"
+        height="100"
+        depth="100"
+        color="red">
+      </a-box>
+
     </a-nft>
 
     <a-entity camera></a-entity>
   </a-scene>
+
+  <script>
+    const status = document.getElementById('status');
+    const marker = document.getElementById('nft-marker');
+
+    window.addEventListener('arjs-nft-loaded', () => {
+      status.textContent =
+        'NFT ready — scan the reference image';
+    });
+
+    marker.addEventListener('markerFound', () => {
+      status.textContent = 'Image detected!';
+    });
+
+    marker.addEventListener('markerLost', () => {
+      status.textContent =
+        'Looking for reference image...';
+    });
+
+    window.addEventListener('error', event => {
+      status.textContent = 'Error: ' + event.message;
+    });
+
+    window.addEventListener('unhandledrejection', event => {
+      status.textContent =
+        'AR error: ' + String(event.reason);
+    });
+  </script>
 </body>
 </html>
