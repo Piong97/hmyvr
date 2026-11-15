@@ -131,7 +131,7 @@ function notify(type, message) {
         source: 'hmy-marker-ar',
         type,
         message
-    }, location.origin);
+    }, '*');
 }
 
 // Suppress AR.js's default webcam error popup.
@@ -305,9 +305,13 @@ async function startMarker() {
 
 window.addEventListener('message', event => {
     if (!markerFrame) return;
+
+    // Only accept messages from our own AR iframe.
     if (event.source !== markerFrame.contentWindow) return;
-    if (event.origin !== location.origin) return;
+
     if (event.data?.source !== 'hmy-marker-ar') return;
+
+    if (typeof event.data.message !== 'string') return;
 
     status.textContent = event.data.message;
 });
