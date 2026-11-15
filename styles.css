@@ -1261,3 +1261,65 @@ model-viewer:not(:defined) > * {
     .ar-eyebrow{justify-content:center}
     .ar-marker-link{color:#e6c787;text-decoration:underline}
 
+
+/* ==========================================
+   AR CAM — CAMERA VIEWER FIXES
+   ========================================== */
+
+/* Respect hidden state when switching AR modes */
+#ar-workspace[hidden],
+#marker-stage[hidden],
+#surface-stage[hidden],
+#ar-choices[hidden] {
+    display: none !important;
+}
+
+/* Contain both AR experiences inside the workspace */
+#marker-stage,
+#surface-stage {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    background: #102720;
+    border-radius: 10px;
+    isolation: isolate;
+}
+
+/* Marker AR camera lives inside an iframe */
+#marker-stage .ar-marker-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #102720;
+}
+
+/* Surface AR 3D preview */
+#surface-stage model-viewer {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 75%,
+            rgba(205, 185, 138, 0.24),
+            transparent 55%
+        ),
+        linear-gradient(
+            165deg,
+            #36564f 0%,
+            #1a3933 55%,
+            #102720 100%
+        );
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+    #marker-stage,
+    #surface-stage {
+        height: 380px;
+    }
+}
+

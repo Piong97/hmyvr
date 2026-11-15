@@ -1,242 +1,272 @@
 
-/* ==========================================================
-   AR CAM — PAGE-SPECIFIC JAVASCRIPT
-   Haji Mohammad Yassin VR
-
-   Supports:
-   1. Marker AR — AR.js + A-Frame
-   2. Surface AR — model-viewer
-
-   Do not load script.js on this page.
-   ========================================================== */
-
 'use strict';
 
-// ==========================================================
-// HEADER & FOOTER
-// ==========================================================
+// AR CAM — Haji Mohammad Yassin VR
+// Marker AR is isolated in an iframe to protect the website UI.
 
-document.querySelector('#year').textContent =
-    new Date().getFullYear();
+const $ = selector => document.querySelector(selector);
 
-document.querySelector('#menu-toggle').addEventListener('click', () => {
-    const nav = document.querySelector('#primary-nav');
-    const open = nav.classList.toggle('open');
+const choices = $('#ar-choices');
+const workspace = $('#ar-workspace');
+const markerStage = $('#marker-stage');
+const surfaceStage = $('#surface-stage');
+const status = $('#ar-status');
+const surfaceModel = $('#ar-model');
 
-    document.querySelector('#menu-toggle')
-        .setAttribute('aria-expanded', String(open));
+let markerFrame = null;
+let currentMode = null;
+
+// ===== Header and footer =====
+
+$('#year').textContent = new Date().getFullYear();
+
+$('#menu-toggle').addEventListener('click', () => {
+    const open = $('#primary-nav').classList.toggle('open');
+    $('#menu-toggle').setAttribute('aria-expanded', String(open));
 });
 
+// ===== Marker AR document =====
+// A-Frame and AR.js run inside this iframe, not the main page.
 
-// ==========================================================
-// AR PAGE ELEMENTS
-// ==========================================================
+function markerDocument() {
+    const modelURL = new URL('models/mosque.glb', location.href).href;
 
-const choices = document.querySelector('#ar-choices');
-const workspace = document.querySelector('#ar-workspace');
-const markerStage = document.querySelector('#marker-stage');
-const surfaceStage = document.querySelector('#surface-stage');
-const status = document.querySelector('#ar-status');
+    return `<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-let markerScene = null;
-let aframeReady = null;
-
-
-// ==========================================================
-// LOAD EXTERNAL LIBRARIES
-// ==========================================================
-
-function loadScript(src) {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-
-        script.src = src;
-        script.onload = resolve;
-
-        script.onerror = () => {
-            reject(new Error('Unable to load ' + src));
-        };
-
-        document.head.appendChild(script);
-    });
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #102720;
 }
 
-
-// ==========================================================
-// PREPARE AR.JS + A-FRAME
-// ==========================================================
-
-async function prepareMarker() {
-    if (!aframeReady) {
-        aframeReady = (async () => {
-            await loadScript(
-                'https://aframe.io/releases/1.6.0/aframe.min.js'
-            );
-
-            await loadScript(
-                'https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js'
-            );
-        })();
-    }
-
-    return aframeReady;
+a-scene {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
+canvas, .a-canvas {
+    max-width: none !important;
+}
 
-// ==========================================================
-// STOP MARKER AR
-// ==========================================================
+#arjs-video {
+    position: absolute !important;
+    z-index: 0 !important;
+}
+
+#notice {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 20;
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: rgba(8,32,29,.8);
+    color: white;
+    font: 12px Arial, sans-serif;
+    pointer-events: none;
+}
+</style>
+
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+</head>
+
+<body>
+
+<div id="notice">
+    Allow camera access, then point at the Hiro marker.
+</div>
+
+<a-scene
+    embedded
+    vr-mode-ui="enabled:false"
+    renderer="antialias:true;alpha:true"
+    arjs="sourceType:webcam;debugUIEnabled:false;trackingMethod:best;">
+
+    <a-marker id="hiro" preset="hiro" emitevents="true">
+
+        <!-- Test cube to verify marker tracking -->
+        <a-box
+            id="test-cube"
+            position="0 0.22 0"
+            width="0.22"
+            height="0.22"
+            depth="0.22"
+            color="#e1bd78">
+        </a-box>
+
+        <!-- Mosque model -->
+        <a-entity
+            id="mosque"
+            gltf-model="url(${modelURL})">
+        </a-entity>
+
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+</a-scene>
+
+<script>
+const notify = (type, message) => {
+    parent.postMessage(
+        { source: 'hmy-marker-ar', type, message },
+        location.origin
+    );
+};
+
+const marker = document.getElementById('hiro');
+const model = document.getElementById('mosque');
+const notice = document.getElementById('notice');
+
+marker.addEventListener('markerFound', () => {
+    notice.textContent = 'Hiro marker detected';
+    notify('tracking', 'Marker detected. Look for the gold cube and mosque.');
+});
+
+marker.addEventListener('markerLost', () => {
+    notice.textContent = 'Point the camera at the Hiro marker';
+    notify('tracking', 'Marker lost. Keep the entire marker visible.');
+});
+
+model.addEventListener('model-loaded', () => {
+    const mesh = model.getObject3D('mesh');
+    if (!mesh) return;
+
+    const THREE = AFRAME.THREE;
+    const bounds = new THREE.Box3().setFromObject(mesh);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+
+    const maxSize = Math.max(size.x, size.y, size.z);
+
+    if (!Number.isFinite(maxSize) || maxSize <= 0) return;
+
+    // Fit the mosque to approximately 85% of marker width.
+    const scale = 0.85 / maxSize;
+
+    model.object3D.scale.setScalar(scale);
+
+    // Center horizontally and place the bottom at marker level.
+    model.object3D.position.set(
+        -center.x * scale,
+        -bounds.min.y * scale,
+        -center.z * scale
+    );
+
+    document.getElementById('test-cube')
+        .setAttribute('visible', false);
+
+    notify('loaded', 'Mosque model loaded. Point at the Hiro marker.');
+});
+
+model.addEventListener('model-error', () => {
+    notify(
+        'error',
+        'Mosque GLB failed to load. The gold cube can still test marker detection.'
+    );
+});
+
+document.querySelector('a-scene').addEventListener('loaded', () => {
+    notify(
+        'ready',
+        'AR scene ready. Allow camera access and point at the Hiro marker.'
+    );
+});
+
+window.addEventListener('error', event => {
+    notify('error', event.message);
+});
+</script>
+
+</body>
+</html>`;
+}
+
+// ===== Start and stop Marker AR =====
 
 function stopMarker() {
-    if (markerScene) {
-        try {
-            markerScene.pause();
-            markerScene.renderer?.dispose();
-        } catch (error) {
-            console.warn(error);
-        }
+    if (!markerFrame) return;
 
-        markerScene.remove();
-        markerScene = null;
-    }
-
+    markerFrame.remove();
+    markerFrame = null;
     markerStage.replaceChildren();
-
-    document.querySelectorAll('video').forEach(video => {
-        if (
-            video.closest('#marker-stage') ||
-            video.id === 'arjs-video'
-        ) {
-            video.srcObject?.getTracks().forEach(track => {
-                track.stop();
-            });
-
-            video.remove();
-        }
-    });
 }
 
+function startMarker() {
+    stopMarker();
 
-// ==========================================================
-// START MARKER AR
-// ==========================================================
+    markerFrame = document.createElement('iframe');
+    markerFrame.className = 'ar-marker-frame';
+    markerFrame.title = 'Hiro marker AR camera';
 
-async function startMarker() {
+    markerFrame.setAttribute('allow', 'camera; autoplay');
+    markerFrame.setAttribute('allowfullscreen', '');
+
+    markerFrame.srcdoc = markerDocument();
+    markerStage.appendChild(markerFrame);
+
     status.textContent =
-        'Loading AR camera… Please allow camera access when prompted.';
-
-    try {
-        await prepareMarker();
-
-        if (markerStage.hidden) return;
-
-        // Create A-Frame scene
-        markerScene = document.createElement('a-scene');
-
-        markerScene.setAttribute('embedded', '');
-
-        markerScene.setAttribute(
-            'vr-mode-ui',
-            'enabled: false'
-        );
-
-        markerScene.setAttribute(
-            'renderer',
-            'antialias: true; alpha: true'
-        );
-
-        markerScene.setAttribute(
-            'arjs',
-            'sourceType: webcam; debugUIEnabled: false; trackingMethod: best;'
-        );
-
-        // Create Hiro marker
-        const marker = document.createElement('a-marker');
-
-        marker.setAttribute('preset', 'hiro');
-
-        // Create mosque model
-        const model = document.createElement('a-entity');
-
-        model.setAttribute(
-            'gltf-model',
-            'url(models/mosque.glb)'
-        );
-
-        model.setAttribute('scale', '1 1 1');
-
-        // Automatically resize and center the mosque
-        model.addEventListener('model-loaded', () => {
-            const mesh = model.getObject3D('mesh');
-
-            if (!mesh) return;
-
-            const THREE = window.AFRAME.THREE;
-
-            const box = new THREE.Box3().setFromObject(mesh);
-
-            const size = box.getSize(new THREE.Vector3());
-
-            const center = box.getCenter(new THREE.Vector3());
-
-            const max = Math.max(
-                size.x,
-                size.y,
-                size.z
-            );
-
-            if (max > 0) {
-                const scale = 1.3 / max;
-
-                model.setAttribute(
-                    'scale',
-                    `${scale} ${scale} ${scale}`
-                );
-
-                model.setAttribute(
-                    'position',
-                    `${-center.x * scale} ${-box.min.y * scale} ${-center.z * scale}`
-                );
-            }
-
-            status.textContent =
-                'Camera ready. Point at the Hiro marker and keep it fully visible.';
-        });
-
-        // Model loading error
-        model.addEventListener('model-error', () => {
-            status.textContent =
-                'Could not load models/mosque.glb. Check the model file path.';
-        });
-
-        marker.appendChild(model);
-
-        markerScene.appendChild(marker);
-
-        // AR camera
-        const camera = document.createElement('a-entity');
-
-        camera.setAttribute('camera', '');
-
-        markerScene.appendChild(camera);
-
-        // Display scene
-        markerStage.appendChild(markerScene);
-
-    } catch (error) {
-        console.error(error);
-
-        status.textContent =
-            'AR camera could not start. Check internet access, HTTPS, browser camera permissions, and the browser console.';
-    }
+        'Starting camera… Please allow camera access.';
 }
 
+// Receive tracking messages from the iframe.
 
-// ==========================================================
-// SWITCH BETWEEN AR MODES
-// ==========================================================
+window.addEventListener('message', event => {
+    if (!markerFrame) return;
 
-async function selectMode(mode) {
+    if (event.source !== markerFrame.contentWindow) return;
+    if (event.origin !== location.origin) return;
+    if (event.data?.source !== 'hmy-marker-ar') return;
+
+    status.textContent = event.data.message;
+});
+
+// ===== Surface AR camera framing =====
+
+function setSurfaceCamera() {
+    if (!surfaceModel?.getDimensions) return;
+
+    const dimensions = surfaceModel.getDimensions();
+
+    const maxSize = Math.max(
+        dimensions.x,
+        dimensions.y,
+        dimensions.z
+    );
+
+    if (!Number.isFinite(maxSize) || maxSize <= 0) return;
+
+    // Smaller distance = larger 3D preview.
+    surfaceModel.cameraOrbit =
+        `35deg 68deg ${maxSize * 1.05}m`;
+
+    surfaceModel.jumpCameraToGoal();
+}
+
+surfaceModel?.addEventListener('load', setSurfaceCamera);
+
+surfaceModel?.addEventListener('error', () => {
+    if (currentMode === 'surface') {
+        status.textContent = 'Cannot load models/mosque.glb.';
+    }
+});
+
+// ===== AR mode selection =====
+
+function selectMode(mode) {
+    if (mode !== 'marker' && mode !== 'surface') return;
+
+    currentMode = mode;
     stopMarker();
 
     choices.hidden = true;
@@ -245,16 +275,19 @@ async function selectMode(mode) {
     markerStage.hidden = mode !== 'marker';
     surfaceStage.hidden = mode !== 'surface';
 
-    document.querySelector('#ar-mode-title').textContent =
-        mode === 'marker'
-            ? 'Marker AR · AR.js + A-Frame'
-            : 'Surface AR · model-viewer';
+    $('#ar-mode-title').textContent = mode === 'marker'
+        ? 'Marker AR · AR.js + A-Frame'
+        : 'Surface AR · model-viewer';
 
     if (mode === 'marker') {
-        await startMarker();
+        startMarker();
     } else {
         status.textContent =
-            'Rotate the preview, then tap "View Mosque in AR" on a supported mobile device. On desktop, you can explore the 3D preview.';
+            'Rotate the 3D preview or tap View Mosque in AR on a supported phone.';
+
+        if (surfaceModel?.loaded) {
+            setSurfaceCamera();
+        }
     }
 
     workspace.scrollIntoView({
@@ -263,10 +296,7 @@ async function selectMode(mode) {
     });
 }
 
-
-// ==========================================================
-// AR MODE BUTTONS
-// ==========================================================
+// ===== Mode buttons =====
 
 document.querySelectorAll('[data-mode]').forEach(button => {
     button.addEventListener('click', () => {
@@ -274,12 +304,10 @@ document.querySelectorAll('[data-mode]').forEach(button => {
     });
 });
 
+// ===== Return to selection =====
 
-// ==========================================================
-// BACK TO AR MODE SELECTION
-// ==========================================================
-
-document.querySelector('#ar-back').addEventListener('click', () => {
+$('#ar-back').addEventListener('click', () => {
+    currentMode = null;
     stopMarker();
 
     markerStage.hidden = true;
@@ -294,9 +322,6 @@ document.querySelector('#ar-back').addEventListener('click', () => {
     });
 });
 
-
-// ==========================================================
-// CLEAN UP CAMERA WHEN LEAVING PAGE
-// ==========================================================
+// ===== Cleanup =====
 
 window.addEventListener('pagehide', stopMarker);
