@@ -1,1 +1,314 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gallery | Haji Mohammad Yassin – VR</title><link rel="stylesheet" href="styles.css"></head><body><main class="hero" style="min-height:100vh;display:grid;place-items:center;text-align:center;padding:32px"><div><div class="eyebrow" style="justify-content:center">COMING SOON</div><h1>Project <em>Gallery</em></h1><p>We're preparing this part of the experience.</p><a class="btn btn-gold" href="index.html">← Back to Home</a></div></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#0c2724" name="theme-color"/>
+  <meta content="Explore the Haji Mohammad Yassin Mosque digital gallery, sign language videos and illustrated comic." name="description"/>
+  <title>
+   Gallery | Haji Mohammad Yassin VR
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="styles.css" rel="stylesheet"/>
+  <link href="gallery.css" rel="stylesheet"/>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js">
+  </script>
+  <script defer="" src="gallery.js">
+  </script>
+ </head>
+ <body>
+  <header class="site-header">
+   <div class="shell nav">
+    <a aria-label="Haji Mohammad Yassin VR home" class="brand" href="index.html">
+     <span class="logo-frame">
+      <img alt="VR logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_vr.png"/>
+      <span class="logo-fallback" hidden="">
+       HMYM-VR
+      </span>
+     </span>
+     <span class="brand-copy">
+      <strong>
+       HAJI MOHAMMAD YASSIN
+      </strong>
+      <small>
+       VIRTUAL MOSQUE EXPERIENCE
+      </small>
+     </span>
+    </a>
+    <nav aria-label="Main navigation" class="primary-nav" id="primary-nav">
+     <a href="index.html">
+      Home
+     </a>
+     <a aria-current="page" class="active" href="gallery.html">
+      Gallery
+     </a>
+     <a href="ar-cam.html">
+      AR Cam
+     </a>
+    </nav>
+    <div class="nav-actions">
+     <span class="project-logo">
+      <img alt="Company logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="assets/logo_company.png"/>
+      <span hidden="">
+       Warisan XR Studio
+      </span>
+     </span>
+     <button aria-controls="primary-nav" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle" id="menu-toggle">
+      <span>
+      </span>
+      <span>
+      </span>
+      <span>
+      </span>
+     </button>
+    </div>
+   </div>
+  </header>
+  <main>
+   <section class="gallery-hero">
+    <div class="shell gallery-hero-inner">
+     <div>
+      <div class="eyebrow">
+       <span class="eyebrow-line">
+       </span>
+       THE DIGITAL COLLECTION
+      </div>
+      <h1>
+       Stories worth
+       <em>
+        exploring.
+       </em>
+      </h1>
+      <p>
+       Discover the mosque through film, accessible sign language storytelling, and an illustrated digital comic.
+      </p>
+      <div class="gallery-hero-links">
+       <a href="#teaser">
+        01 / TEASER
+       </a>
+       <a href="#sign-language">
+        02 / SIGN LANGUAGE
+       </a>
+       <a href="#comic">
+        03 / COMIC
+       </a>
+      </div>
+     </div>
+     <figure class="gallery-hero-photo">
+      <img alt="Haji Mohammad Yassin Mosque architecture" onerror="this.hidden=true;this.parentElement.classList.add('photo-missing')" src="assets/gallery-hero.jpg"/>
+      <figcaption>
+       HAJI MOHAMMAD YASSIN MOSQUE
+       <span>
+        &middot; PAGOH, JOHOR
+       </span>
+      </figcaption>
+     </figure>
+    </div>
+   </section>
+   <section class="gallery-section teaser-section" id="teaser">
+    <div class="shell">
+     <div class="gallery-heading">
+      <div>
+       <div class="section-eyebrow">
+        01 / A FIRST LOOK
+       </div>
+       <h2>
+        Experience
+        <em>
+         teaser.
+        </em>
+       </h2>
+       <p>
+        A glimpse into the virtual mosque experience.
+       </p>
+      </div>
+      <span class="section-counter">
+       FEATURED FILM
+      </span>
+     </div>
+     <div class="teaser-layout">
+      <div class="media-stage">
+       <video controls="" id="teaser-video" playsinline="" poster="assets/gallery-teaser.jpg" preload="none">
+        <source src="videos/website-teaser.mp4" type="video/mp4"/>
+        Your browser does not support video.
+       </video>
+       <div class="video-unavailable" hidden="" id="teaser-empty">
+        <span>
+         ▶
+        </span>
+        <strong>
+         Teaser coming soon
+        </strong>
+        <small>
+         Add videos/website-teaser.mp4
+        </small>
+       </div>
+      </div>
+      <aside class="teaser-aside">
+       <span class="mini-label">
+        FEATURED / 001
+       </span>
+       <h3>
+        A new perspective on heritage.
+       </h3>
+       <p>
+        From the physical mosque to an interactive digital experience &mdash; discover what the project has to offer.
+       </p>
+       <span class="detail-line">
+        HAJI MOHAMMAD YASSIN MOSQUE
+        <br/>
+        PAGOH, MUAR &middot; JOHOR
+       </span>
+      </aside>
+     </div>
+    </div>
+   </section>
+   <section class="gallery-section language-section" id="sign-language">
+    <div class="shell">
+     <div class="gallery-heading">
+      <div>
+       <div class="section-eyebrow">
+        02 / ACCESSIBLE HERITAGE
+       </div>
+       <h2>
+        Heritage in
+        <em>
+         sign language.
+        </em>
+       </h2>
+       <p>
+        Discover five architectural and heritage features of the mosque through sign language videos, available with English or Bahasa Melayu subtitles.
+       </p>
+      </div>
+      <span class="section-counter">
+       05 FEATURES &middot; 02 LANGUAGES
+      </span>
+     </div>
+     <div class="language-toolbar">
+      <div aria-label="Subtitle language" class="language-switch" role="group">
+       <button aria-pressed="true" class="language-button active" data-lang="en" type="button">
+        English
+       </button>
+       <button aria-pressed="false" class="language-button" data-lang="bm" type="button">
+        Bahasa Melayu
+       </button>
+      </div>
+      <span aria-live="polite" id="language-indicator">
+       English subtitles
+      </span>
+     </div>
+     <div class="video-grid" id="video-grid">
+     </div>
+    </div>
+   </section>
+   <section class="gallery-section comic-section" id="comic">
+    <div class="shell">
+     <div class="gallery-heading">
+      <div>
+       <div class="section-eyebrow">
+        03 / ILLUSTRATED HERITAGE
+       </div>
+       <h2>
+        Turn the
+        <em>
+         page.
+        </em>
+       </h2>
+       <p>
+        Read the illustrated heritage story of Haji Mohammad Yassin Mosque. Turn the pages to explore.
+       </p>
+      </div>
+      <span class="section-counter">
+       INTERACTIVE COMIC
+      </span>
+     </div>
+     <div class="comic-layout">
+      <div class="reader-panel" id="comic-reader">
+       <div class="reader-topbar">
+        <span>
+         Jejak Warisan: Masjid Haji Muhammad Yassin - Realiti Maya
+        </span>
+       </div>
+       <div aria-label="Comic reader; use left and right arrow keys" class="book-viewport" id="book-viewport" tabindex="0">
+        <div aria-label="Interactive comic flipbook" class="flipbook" id="flipbook">
+        </div>
+        <div class="book-placeholder" id="book-placeholder">
+         <span class="placeholder-ornament">
+          ۞
+         </span>
+         <span class="placeholder-label">
+          HAJI MOHAMMAD YASSIN MOSQUE
+         </span>
+         <strong>
+          THE COMIC
+         </strong>
+         <small>
+          Illustrated pages coming soon
+         </small>
+        </div>
+       </div>
+       <div class="reader-controls">
+        <button aria-label="Previous comic page" id="page-prev" type="button">
+         &larr; Previous
+        </button>
+        <span aria-live="polite" id="page-count">
+         01 / 01
+        </span>
+        <button aria-label="Next comic page" id="page-next" type="button">
+         Next &rarr;
+        </button>
+       </div>
+       <p class="comic-reader-hint">
+        Drag or swipe the pages to turn &middot; Use the arrows to navigate
+       </p>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="cta-section">
+    <div class="shell cta-inner">
+     <div>
+      <div class="section-eyebrow">
+       CONTINUE THE JOURNEY
+      </div>
+      <h2>
+       Explore the mosque
+       <em>
+        further.
+       </em>
+      </h2>
+     </div>
+     <div class="cta-actions">
+      <a class="btn btn-gold" href="index.html">
+       Back to Home &nearrow;
+      </a>
+      <a class="btn btn-outline" href="ar-cam.html">
+       Try AR Cam &nearrow;
+      </a>
+     </div>
+    </div>
+   </section>
+  </main>
+  <footer class="footer">
+   <div class="shell footer-inner">
+    <div>
+     <strong>
+      HAJI MOHAMMAD YASSIN &mdash; VR
+     </strong>
+     <small>
+      A digital heritage experience &middot; Pagoh, Muar
+     </small>
+    </div>
+    <span>
+     &copy;
+     <span id="year">
+     </span>
+     Haji Mohammad Yassin &ndash; VR
+    </span>
+   </div>
+  </footer>
+ </body>
+</html>
+
