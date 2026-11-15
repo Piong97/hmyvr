@@ -1262,11 +1262,11 @@ model-viewer:not(:defined) > * {
     .ar-marker-link{color:#e6c787;text-decoration:underline}
 
 
+
 /* ==========================================
-   AR CAM — CAMERA VIEWER FIXES
+   AR CAM — VIEWER LAYOUT
    ========================================== */
 
-/* Respect hidden state when switching AR modes */
 #ar-workspace[hidden],
 #marker-stage[hidden],
 #surface-stage[hidden],
@@ -1274,19 +1274,23 @@ model-viewer:not(:defined) > * {
     display: none !important;
 }
 
-/* Contain both AR experiences inside the workspace */
+#ar-workspace {
+    width: 100%;
+    min-width: 0;
+}
+
 #marker-stage,
 #surface-stage {
     position: relative;
+    display: block;
     width: 100%;
-    height: 480px;
+    height: 620px;
     overflow: hidden;
+    border-radius: 12px;
     background: #102720;
-    border-radius: 10px;
     isolation: isolate;
 }
 
-/* Marker AR camera lives inside an iframe */
 #marker-stage .ar-marker-frame {
     display: block;
     width: 100%;
@@ -1295,16 +1299,14 @@ model-viewer:not(:defined) > * {
     background: #102720;
 }
 
-/* Surface AR 3D preview */
 #surface-stage model-viewer {
     display: block;
     width: 100%;
     height: 100%;
-
     background:
         radial-gradient(
             ellipse at 50% 75%,
-            rgba(205, 185, 138, 0.24),
+            rgba(205, 185, 138, .24),
             transparent 55%
         ),
         linear-gradient(
@@ -1315,11 +1317,18 @@ model-viewer:not(:defined) > * {
         );
 }
 
-/* Mobile */
-@media (max-width: 650px) {
-    #marker-stage,
-    #surface-stage {
-        height: 380px;
-    }
+#ar-status {
+    overflow-wrap: anywhere;
 }
 
+/* Phone: larger camera, using most of the screen height */
+@media (max-width: 650px) {
+    #marker-stage {
+        height: min(72svh, 720px);
+        min-height: 440px;
+    }
+
+    #surface-stage {
+        height: 460px;
+    }
+}
