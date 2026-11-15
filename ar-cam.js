@@ -95,26 +95,41 @@ a-scene,
     renderer="antialias: true; alpha: true"
     arjs="sourceType: webcam; debugUIEnabled: false;">
 
-    <a-marker
-        id="hiro"
-        preset="hiro"
-        emitevents="true">
+    
+<a-marker
+    id="hiro"
+    preset="hiro"
+    emitevents="true">
 
-        <!-- Diagnostic cube: remains visible -->
-        <a-box
-            position="0.48 0.10 0.35"
-            width="0.15"
-            height="0.20"
-            depth="0.15"
-            color="#e1bd78">
-        </a-box>
+    <!-- Large red cube for testing -->
+    <a-box
+        position="0 0.5 0"
+        width="1"
+        height="1"
+        depth="1"
+        color="red"
+        material="shader: flat; side: double">
+    </a-box>
 
-        <a-entity
-            id="mosque"
-            gltf-model="url(${modelURL})">
-        </a-entity>
+    <!-- Green sphere above the cube -->
+    <a-sphere
+        position="0 1.3 0"
+        radius="0.25"
+        color="lime"
+        material="shader: flat">
+    </a-sphere>
 
-    </a-marker>
+</a-marker>
+
+<a-box
+    position="0 0 -2"
+    width="0.3"
+    height="0.3"
+    depth="0.3"
+    color="yellow"
+    material="shader: flat">
+</a-box>
+
 
     <a-entity camera></a-entity>
 </a-scene>
@@ -122,7 +137,7 @@ a-scene,
 <script>
 const notice = document.getElementById('notice');
 const marker = document.getElementById('hiro');
-const model = document.getElementById('mosque');
+// const model = document.getElementById('mosque');
 
 function notify(type, message) {
     notice.textContent = message;
