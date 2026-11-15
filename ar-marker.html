@@ -1,296 +1,643 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071d1a">
 
-    <title>MindAR | Haji Mohammad Yassin VR</title>
+  <title>MindAR | Haji Mohammad Yassin Mosque</title>
 
-    <!-- A-Frame + MindAR -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <style>
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
+  <style>
+    * { box-sizing: border-box; }
 
-        .back-button {
-            position: fixed;
-            top: max(16px, env(safe-area-inset-top));
-            left: 16px;
-            z-index: 10001;
-            padding: 12px 18px;
-            border: 1px solid #d7b777;
-            border-radius: 8px;
-            background: rgba(7, 29, 26, 0.9);
-            color: white;
-            font: 600 14px Arial, sans-serif;
-            text-decoration: none;
-        }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: none;
+      font-family: Arial, sans-serif;
+    }
 
-        #status {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10001;
-            max-width: 85%;
-            padding: 10px 16px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.75);
-            color: white;
-            font: 14px Arial, sans-serif;
-            text-align: center;
-            pointer-events: none;
-        }
+    .top-bar {
+      position: fixed;
+      z-index: 10001;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: none;
+    }
 
-        #reset-model {
-            position: fixed;
-            top: max(16px, env(safe-area-inset-top));
-            right: 16px;
-            z-index: 10001;
-            padding: 12px 16px;
-            border: 1px solid #d7b777;
-            border-radius: 8px;
-            background: rgba(7, 29, 26, 0.9);
-            color: white;
-            font: 600 14px Arial, sans-serif;
-            cursor: pointer;
-        }
+    .top-bar a,
+    .top-bar button {
+      pointer-events: auto;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid #d7b777;
+      border-radius: 9px;
+      background: rgba(7, 29, 26, 0.92);
+      color: white;
+      font: 600 13px Arial, sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+    }
 
-        html, body {
-            touch-action: none;
-            overscroll-behavior: none;
-        }
-    </style>
+    #status {
+      position: fixed;
+      z-index: 10001;
+      left: 50%;
+      bottom: calc(68px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100vw - 24px);
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .ar-controls {
+      position: fixed;
+      z-index: 10002;
+      left: 50%;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: min(360px, calc(100vw - 24px));
+      border: 1px solid rgba(215, 183, 119, 0.6);
+      border-radius: 12px;
+      background: rgba(7, 29, 26, 0.95);
+      color: white;
+      overflow: hidden;
+    }
+
+    .controls-toggle {
+      width: 100%;
+      padding: 13px 14px;
+      border: none;
+      background: transparent;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      font: 600 13px Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .controls-toggle span:last-child { color: #d7b777; }
+
+    .controls-body {
+      padding: 0 14px 14px;
+      max-height: 52dvh;
+      overflow-y: auto;
+    }
+
+    .ar-controls.collapsed .controls-body { display: none; }
+
+    .gesture-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0 14px;
+      font-size: 12px;
+    }
+
+    .gesture-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: #d7b777;
+    }
+
+    .control-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .control-tab {
+      padding: 10px 4px;
+      border: 1px solid #456158;
+      border-radius: 7px;
+      background: #173a32;
+      color: white;
+      font: 600 12px Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .control-tab.active {
+      background: #d7b777;
+      border-color: #d7b777;
+      color: #071d1a;
+    }
+
+    .control-page[hidden] { display: none; }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 65px minmax(0, 1fr) 48px;
+      gap: 8px;
+      align-items: center;
+      margin: 13px 0;
+    }
+
+    .control-row label { font-size: 12px; }
+
+    .control-row input[type="range"] {
+      width: 100%;
+      min-width: 0;
+      accent-color: #d7b777;
+      touch-action: none;
+    }
+
+    .control-value {
+      font-size: 11px;
+      text-align: right;
+      color: #d7b777;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hint {
+      margin: 10px 0 0;
+      color: #cbd5d1;
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @media (max-width: 340px) {
+      .top-bar a, .top-bar button {
+        padding: 9px 10px;
+        font-size: 12px;
+      }
+
+      .control-row {
+        grid-template-columns: 56px minmax(0, 1fr) 44px;
+        gap: 6px;
+      }
+    }
+
+    @media (max-height: 540px) {
+      .controls-body { max-height: 40dvh; }
+    }
+  </style>
 </head>
 
 <body>
 
-    <a href="ar-cam.html" class="back-button">
-        ← Back
-    </a>
+  <div class="top-bar">
+    <a href="ar-cam.html">← Back</a>
+    <button id="reset-model" type="button">↺ Reset</button>
+  </div>
 
-    <button id="reset-model" type="button">
-        ↺ Reset View
+  <div id="status" role="status">Starting MindAR...</div>
+
+  <div class="ar-controls" id="ar-controls">
+
+    <button
+      id="controls-toggle"
+      class="controls-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="controls-body">
+      <span>3D Model Controls</span>
+      <span id="toggle-label">Show +</span>
     </button>
 
-    <div id="status" role="status">
-        Starting MindAR...
+    <div class="controls-body" id="controls-body">
+
+      <label class="gesture-row" for="gesture-toggle">
+        <span>Enable touch gestures</span>
+        <input id="gesture-toggle" type="checkbox" checked>
+      </label>
+
+      <div class="control-tabs">
+        <button class="control-tab active"
+                data-tab="move" type="button">Move</button>
+        <button class="control-tab"
+                data-tab="rotate" type="button">Rotate</button>
+        <button class="control-tab"
+                data-tab="scale" type="button">Scale</button>
+      </div>
+
+      <div class="control-page" data-page="move">
+
+        <div class="control-row">
+          <label for="pos-x">Move X</label>
+          <input id="pos-x" type="range"
+                 min="-2" max="2" step="0.01" value="0.5">
+          <span class="control-value" id="pos-x-value">0.50</span>
+        </div>
+
+        <div class="control-row">
+          <label for="pos-y">Move Y</label>
+          <input id="pos-y" type="range"
+                 min="-2" max="2" step="0.01" value="0">
+          <span class="control-value" id="pos-y-value">0.00</span>
+        </div>
+
+        <div class="control-row">
+          <label for="pos-z">Move Z</label>
+          <input id="pos-z" type="range"
+                 min="-2" max="2" step="0.01" value="0">
+          <span class="control-value" id="pos-z-value">0.00</span>
+        </div>
+
+      </div>
+
+      <div class="control-page" data-page="rotate" hidden>
+
+        <div class="control-row">
+          <label for="rot-x">Rotate X</label>
+          <input id="rot-x" type="range"
+                 min="-180" max="180" step="1" value="90">
+          <span class="control-value" id="rot-x-value">90°</span>
+        </div>
+
+        <div class="control-row">
+          <label for="rot-y">Rotate Y</label>
+          <input id="rot-y" type="range"
+                 min="-180" max="180" step="1" value="0">
+          <span class="control-value" id="rot-y-value">0°</span>
+        </div>
+
+        <div class="control-row">
+          <label for="rot-z">Rotate Z</label>
+          <input id="rot-z" type="range"
+                 min="-180" max="180" step="1" value="0">
+          <span class="control-value" id="rot-z-value">0°</span>
+        </div>
+
+      </div>
+
+      <div class="control-page" data-page="scale" hidden>
+
+        <div class="control-row">
+          <label for="zoom-slider">Zoom</label>
+          <input id="zoom-slider" type="range"
+                 min="0.3" max="5" step="0.01" value="1">
+          <span class="control-value" id="zoom-value">1.00×</span>
+        </div>
+
+      </div>
+
+      <p class="hint">
+        1 finger: Rotate · 2 fingers: Move · Pinch: Zoom
+      </p>
+
     </div>
+  </div>
 
-    <a-scene mindar-image="
-        imageTargetSrc: nft/mosque.mind;
-        filterMinCF: 0.0001;
-        filterBeta: 0.001;
-        warmupTolerance: 3;
-        missTolerance: 10;
-        " 
-        embedded color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false">
+  <a-scene
+    mindar-image="
+      imageTargetSrc: nft/mosque.mind;
+      filterMinCF: 0.0001;
+      filterBeta: 0.001;
+      warmupTolerance: 3;
+      missTolerance: 10;
+    "
+    embedded
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
 
-        <a-camera position="0 0 0" look-controls="enabled: false">
-        </a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false">
+    </a-camera>
 
-        <a-entity
-            id="image-target"
-            mindar-image-target="targetIndex: 0">
+    <a-entity id="image-target"
+              mindar-image-target="targetIndex: 0">
 
-            <a-entity
-                id="model-controller"
-                position="0 0 0"
-                rotation="0 0 0"
-                scale="1 1 1">
-            
-                <a-entity
-                    id="mosque-model"
-                    gltf-model="url(models/mosque.glb)"
-                    position="0.5 0 0"
-                    rotation="90 0 0"
-                    scale="0.1 0.1 0.1">
-                </a-entity>
-            
-            </a-entity>
+      <a-entity
+        id="mosque-model"
+        gltf-model="url(models/mosque.glb)"
+        position="0.5 0 0"
+        rotation="90 0 0"
+        scale="0.1 0.1 0.1">
+      </a-entity>
 
-        </a-entity>
+    </a-entity>
+  </a-scene>
 
-    </a-scene>
+  <script>
+    'use strict';
 
-    <script>
-        const status = document.getElementById('status');
-        const scene = document.querySelector('a-scene');
-        const target = document.getElementById('image-target');
+    const status = document.getElementById('status');
+    const scene = document.querySelector('a-scene');
+    const target = document.getElementById('image-target');
+    const model = document.getElementById('mosque-model');
 
-        scene.addEventListener('arReady', () => {
-            status.textContent =
-                'Camera ready — scan the reference image';
-        });
+    let modelReady = false;
+    let trackingActive = false;
 
-        scene.addEventListener('arError', () => {
-            status.textContent =
-                'MindAR error — check camera permission and target file';
-        });
+    function updateLoadingStatus() {
+    if (!modelReady) {
+        status.textContent = 'Loading 3D mosque model...';
+        status.style.background = 'rgba(0, 0, 0, 0.8)';
+    } else if (trackingActive) {
+        status.textContent = 'TRACKING ACTIVE — Mosque visible';
+        status.style.background = 'rgba(0, 110, 50, 0.85)';
+    } else {
+        status.textContent = 'Model ready — scan the mosque image';
+        status.style.background = 'rgba(0, 0, 0, 0.75)';
+    }
+    }
 
-        target.addEventListener('targetFound', () => {
-            status.textContent = 'TRACKING ACTIVE — Mosque visible';
-            status.style.background = 'rgba(0, 110, 50, 0.85)';
-        });
+    model.addEventListener('model-loaded', () => {
+    modelReady = true;
+    updateLoadingStatus();
+    });
 
-        target.addEventListener('targetLost', () => {
-            status.textContent = 'TRACKING LOST — Scan image again';
-            status.style.background = 'rgba(180, 40, 30, 0.85)';
-        });
+    model.addEventListener('model-error', () => {
+    status.textContent = 'Failed to load mosque.glb';
+    status.style.background = 'rgba(180, 40, 30, 0.85)';
+    });
 
-        window.addEventListener('error', event => {
-            status.textContent =
-                'Error: ' + event.message;
-        });
+    const DEFAULTS = {
+      px: 0.5, py: 0, pz: 0,
+      rx: 90, ry: 0, rz: 0,
+      zoom: 0.8
+    };
 
+    const BASE_SCALE = 0.1;
+    const MIN_ZOOM = 0.3;
+    const MAX_ZOOM = 5;
 
-        const controller = document.getElementById('model-controller');
-        const resetButton = document.getElementById('reset-model');
+    const sliderIds = {
+      px: 'pos-x',
+      py: 'pos-y',
+      pz: 'pos-z',
+      rx: 'rot-x',
+      ry: 'rot-y',
+      rz: 'rot-z',
+      zoom: 'zoom-slider'
+    };
 
-        let lastX = 0;
-        let lastY = 0;
-        let lastDistance = 0;
-        let lastMidX = 0;
-        let lastMidY = 0;
+    const sliders = {};
+    const values = {};
+    const state = { ...DEFAULTS };
 
-        let zoom = 1;
-        let rotationY = 0;
-        let rotationX = 0;
-        let offsetX = 0;
-        let offsetY = 0;
+    Object.entries(sliderIds).forEach(([key, id]) => {
+      sliders[key] = document.getElementById(id);
+      values[key] = document.getElementById(
+        key === 'zoom' ? 'zoom-value' : id + '-value'
+      );
+    });
 
-        const MIN_ZOOM = 0.3;
-        const MAX_ZOOM = 5;
+    // ===== MindAR Events =====
 
-        function distance(a, b) {
-        return Math.hypot(
-            a.clientX - b.clientX,
-            a.clientY - b.clientY
-        );
-        }
+    scene.addEventListener('arReady', () => {
+      status.textContent = 'Camera ready — scan the reference image';
+    });
 
-        function midpoint(a, b) {
-        return {
-            x: (a.clientX + b.clientX) / 2,
-            y: (a.clientY + b.clientY) / 2
-        };
-        }
+    scene.addEventListener('arError', () => {
+      status.textContent = 'MindAR error — check camera permission';
+    });
 
-        function updateModel() {
-        controller.object3D.rotation.set(
-            rotationX,
-            rotationY,
-            0
-        );
+    target.addEventListener('targetFound', () => {
+        trackingActive = true;
+        updateLoadingStatus();
+    });
 
-        controller.object3D.scale.setScalar(zoom);
+    target.addEventListener('targetLost', () => {
+        trackingActive = false;
+        updateLoadingStatus();
+    });
 
-        controller.object3D.position.set(
-            offsetX,
-            offsetY,
-            0
-        );
-        }
+    window.addEventListener('error', event => {
+      status.textContent = 'Error: ' + event.message;
+    });
 
-        document.addEventListener('touchstart', event => {
-        if (event.target.closest('button, a')) return;
+    // ===== Transform State =====
 
-        if (event.touches.length === 1) {
-            lastX = event.touches[0].clientX;
-            lastY = event.touches[0].clientY;
-        }
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
 
-        if (event.touches.length === 2) {
-            lastDistance = distance(
-            event.touches[0],
-            event.touches[1]
-            );
+    function wrapDegrees(degrees) {
+      return ((degrees + 180) % 360 + 360) % 360 - 180;
+    }
 
-            const mid = midpoint(
-            event.touches[0],
-            event.touches[1]
-            );
+    function updateModel() {
+      model.object3D.position.set(state.px, state.py, state.pz);
 
-            lastMidX = mid.x;
-            lastMidY = mid.y;
-        }
-        }, { passive: true });
+      model.object3D.rotation.set(
+        THREE.MathUtils.degToRad(state.rx),
+        THREE.MathUtils.degToRad(state.ry),
+        THREE.MathUtils.degToRad(state.rz),
+        'XYZ'
+      );
 
-        document.addEventListener('touchmove', event => {
-        if (event.target.closest('button, a')) return;
+      model.object3D.scale.setScalar(BASE_SCALE * state.zoom);
 
+      Object.keys(sliders).forEach(key => {
+        sliders[key].value = state[key];
+
+        const value = state[key];
+        values[key].textContent =
+          key === 'zoom'
+            ? value.toFixed(2) + '×'
+            : key.startsWith('r')
+              ? value.toFixed(0) + '°'
+              : value.toFixed(2);
+      });
+    }
+
+    // ===== Sliders =====
+
+    Object.entries(sliders).forEach(([key, slider]) => {
+      slider.addEventListener('input', () => {
+        state[key] = Number(slider.value);
+        updateModel();
+      });
+    });
+
+    // ===== Touch Gestures =====
+
+    const gestureToggle = document.getElementById('gesture-toggle');
+
+    let previousTouches = [];
+    let gestureMode = null;
+
+    function getTouches(event) {
+      return Array.from(event.touches).map(touch => ({
+        x: touch.clientX,
+        y: touch.clientY
+      }));
+    }
+
+    function midpoint(a, b) {
+      return {
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2
+      };
+    }
+
+    function distance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function isControlTarget(target) {
+      return target instanceof Element &&
+        !!target.closest('.ar-controls, .top-bar');
+    }
+
+    document.addEventListener('touchstart', event => {
+      if (!gestureToggle.checked || isControlTarget(event.target)) {
+        previousTouches = [];
+        gestureMode = null;
+        return;
+      }
+
+      previousTouches = getTouches(event);
+      gestureMode = previousTouches.length === 1
+        ? 'rotate'
+        : previousTouches.length === 2
+          ? 'panzoom'
+          : null;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', event => {
+      if (!gestureToggle.checked || isControlTarget(event.target)) {
+        return;
+      }
+
+      const currentTouches = getTouches(event);
+
+      if (currentTouches.length !== previousTouches.length) {
+        previousTouches = currentTouches;
+        return;
+      }
+
+      if (currentTouches.length === 1 && gestureMode === 'rotate') {
         if (event.cancelable) event.preventDefault();
 
-        if (event.touches.length === 1) {
-            const touch = event.touches[0];
+        const dx = currentTouches[0].x - previousTouches[0].x;
+        const dy = currentTouches[0].y - previousTouches[0].y;
 
-            const dx = touch.clientX - lastX;
-            const dy = touch.clientY - lastY;
+        // Horizontal swipe: rotate around Y
+        state.ry = wrapDegrees(state.ry + dx * 0.45);
 
-            rotationY += dx * 0.008;
-            rotationX += dy * 0.008;
+        // Vertical swipe: tilt around X
+        state.rx = clamp(state.rx + dy * 0.35, -180, 180);
 
-            rotationX = Math.max(
-            -Math.PI / 3,
-            Math.min(Math.PI / 3, rotationX)
-            );
+        updateModel();
+      }
 
-            lastX = touch.clientX;
-            lastY = touch.clientY;
-        }
+      if (currentTouches.length === 2 && gestureMode === 'panzoom') {
+        if (event.cancelable) event.preventDefault();
 
-        if (event.touches.length === 2) {
-            const a = event.touches[0];
-            const b = event.touches[1];
+        const previousMid = midpoint(
+          previousTouches[0], previousTouches[1]
+        );
 
-            const newDistance = distance(a, b);
+        const currentMid = midpoint(
+          currentTouches[0], currentTouches[1]
+        );
 
-            if (lastDistance > 0) {
-            zoom *= newDistance / lastDistance;
-            zoom = Math.max(
-                MIN_ZOOM,
-                Math.min(MAX_ZOOM, zoom)
-            );
-            }
+        const dx = currentMid.x - previousMid.x;
+        const dy = currentMid.y - previousMid.y;
 
-            const mid = midpoint(a, b);
+        // Move in the tracked image's X/Y coordinates.
+        // Screen-relative approximation for testing.
+        state.px = clamp(state.px + dx * 0.002, -2, 2);
+        state.py = clamp(state.py - dy * 0.002, -2, 2);
 
-            offsetX += (mid.x - lastMidX) * 0.002;
-            offsetY -= (mid.y - lastMidY) * 0.002;
+        const previousDistance = distance(
+          previousTouches[0], previousTouches[1]
+        );
 
-            lastDistance = newDistance;
-            lastMidX = mid.x;
-            lastMidY = mid.y;
+        const currentDistance = distance(
+          currentTouches[0], currentTouches[1]
+        );
+
+        if (previousDistance > 0) {
+          state.zoom = clamp(
+            state.zoom * currentDistance / previousDistance,
+            MIN_ZOOM,
+            MAX_ZOOM
+          );
         }
 
         updateModel();
-        }, { passive: false });
+      }
 
-        document.addEventListener('touchend', () => {
-        lastDistance = 0;
-        });
+      previousTouches = currentTouches;
+    }, { passive: false });
 
-        resetButton.addEventListener('click', () => {
-        zoom = 1;
-        rotationY = 0;
-        rotationX = 0;
-        offsetX = 0;
-        offsetY = 0;
+    document.addEventListener('touchend', event => {
+      previousTouches = getTouches(event);
+      gestureMode = previousTouches.length === 1
+        ? 'rotate'
+        : previousTouches.length === 2
+          ? 'panzoom'
+          : null;
+    });
 
+    document.addEventListener('touchcancel', () => {
+      previousTouches = [];
+      gestureMode = null;
+    });
+
+    gestureToggle.addEventListener('change', () => {
+      previousTouches = [];
+      gestureMode = null;
+    });
+
+    // ===== Reset =====
+
+    document.getElementById('reset-model')
+      .addEventListener('click', () => {
+        Object.assign(state, DEFAULTS);
         updateModel();
+      });
+
+    // ===== Tabs =====
+
+    document.querySelectorAll('.control-tab').forEach(button => {
+      button.addEventListener('click', () => {
+        const selected = button.dataset.tab;
+
+        document.querySelectorAll('.control-tab').forEach(tab => {
+          tab.classList.toggle(
+            'active',
+            tab.dataset.tab === selected
+          );
         });
 
-    </script>
+        document.querySelectorAll('.control-page').forEach(page => {
+          page.hidden = page.dataset.page !== selected;
+        });
+      });
+    });
 
+    // ===== Collapse =====
+
+    const controls = document.getElementById('ar-controls');
+    const toggle = document.getElementById('controls-toggle');
+    const toggleLabel = document.getElementById('toggle-label');
+
+    controls.classList.add('collapsed');
+
+    toggle.addEventListener('click', () => {
+      const collapsed = controls.classList.toggle('collapsed');
+
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+      toggleLabel.textContent = collapsed ? 'Show +' : 'Hide −';
+    });
+
+    updateModel();
+  </script>
 </body>
-
 </html>
