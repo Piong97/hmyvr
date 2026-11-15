@@ -3,8 +3,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
   <meta name="theme-color" content="#071d1a">
 
   <title>MindAR | Haji Mohammad Yassin Mosque</title>
@@ -13,27 +17,66 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      touch-action: none;
       overscroll-behavior: none;
       font-family: Arial, sans-serif;
     }
 
-    .top-bar {
+    body {
+      touch-action: none;
+    }
+
+    /*
+      Do not set fixed sizes or max-width/max-height
+      on the MindAR scene, canvas, or camera video.
+    */
+
+    /* Hide built-in A-Frame VR/AR buttons */
+    .a-enter-vr,
+    .a-enter-vr-button,
+    .a-enter-ar,
+    .a-enter-ar-button {
+      display: none !important;
+    }
+
+    /*
+      Independent UI overlay.
+
+      The overlay uses the visible viewport dimensions,
+      without resizing the AR camera.
+    */
+    #ui-overlay {
       position: fixed;
-      z-index: 10001;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      position: absolute;
+      z-index: 2;
       top: max(12px, env(safe-area-inset-top));
       left: max(12px, env(safe-area-inset-left));
       right: max(12px, env(safe-area-inset-right));
+
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 8px;
+
       pointer-events: none;
     }
 
@@ -42,9 +85,11 @@
       pointer-events: auto;
       min-height: 42px;
       padding: 10px 12px;
+
       border: 1px solid #d7b777;
       border-radius: 9px;
       background: rgba(7, 29, 26, 0.92);
+
       color: white;
       font: 600 13px Arial, sans-serif;
       text-decoration: none;
@@ -53,65 +98,86 @@
     }
 
     #status {
-      position: fixed;
-      z-index: 10001;
+      position: absolute;
+      z-index: 1;
+      top: calc(66px + env(safe-area-inset-top));
       left: 50%;
-      bottom: calc(68px + env(safe-area-inset-bottom));
       transform: translateX(-50%);
+
       width: max-content;
-      max-width: calc(100vw - 24px);
+      max-width: calc(100% - 24px);
+
       padding: 8px 12px;
       border-radius: 9px;
       background: rgba(0, 0, 0, 0.75);
+
       color: white;
       font-size: 12px;
+      line-height: 1.4;
       text-align: center;
+
       pointer-events: none;
     }
 
     .ar-controls {
-      position: fixed;
-      z-index: 10002;
+      position: absolute;
+      z-index: 2;
       left: 50%;
       bottom: max(10px, env(safe-area-inset-bottom));
       transform: translateX(-50%);
-      width: min(360px, calc(100vw - 24px));
+
+      width: min(360px, calc(100% - 24px));
+
       border: 1px solid rgba(215, 183, 119, 0.6);
       border-radius: 12px;
+
       background: rgba(7, 29, 26, 0.95);
       color: white;
+
       overflow: hidden;
+      pointer-events: auto;
     }
 
     .controls-toggle {
       width: 100%;
       padding: 13px 14px;
+
       border: none;
       background: transparent;
       color: white;
+
       display: flex;
       justify-content: space-between;
+      align-items: center;
+
       font: 600 13px Arial, sans-serif;
       cursor: pointer;
     }
 
-    .controls-toggle span:last-child { color: #d7b777; }
+    .controls-toggle span:last-child {
+      color: #d7b777;
+    }
 
     .controls-body {
       padding: 0 14px 14px;
-      max-height: 52dvh;
+      max-height: min(52vh, 360px);
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
-    .ar-controls.collapsed .controls-body { display: none; }
+    .ar-controls.collapsed .controls-body {
+      display: none;
+    }
 
     .gesture-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
+
       margin: 8px 0 14px;
       font-size: 12px;
+      cursor: pointer;
     }
 
     .gesture-row input {
@@ -129,10 +195,13 @@
 
     .control-tab {
       padding: 10px 4px;
+
       border: 1px solid #456158;
       border-radius: 7px;
+
       background: #173a32;
       color: white;
+
       font: 600 12px Arial, sans-serif;
       cursor: pointer;
     }
@@ -143,7 +212,9 @@
       color: #071d1a;
     }
 
-    .control-page[hidden] { display: none; }
+    .control-page[hidden] {
+      display: none;
+    }
 
     .control-row {
       display: grid;
@@ -153,7 +224,9 @@
       margin: 13px 0;
     }
 
-    .control-row label { font-size: 12px; }
+    .control-row label {
+      font-size: 12px;
+    }
 
     .control-row input[type="range"] {
       width: 100%;
@@ -178,7 +251,8 @@
     }
 
     @media (max-width: 340px) {
-      .top-bar a, .top-bar button {
+      .top-bar a,
+      .top-bar button {
         padding: 9px 10px;
         font-size: 12px;
       }
@@ -190,116 +264,231 @@
     }
 
     @media (max-height: 540px) {
-      .controls-body { max-height: 40dvh; }
+      .controls-body {
+        max-height: 35vh;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="top-bar">
-    <a href="ar-cam.html">← Back</a>
-    <button id="reset-model" type="button">↺ Reset</button>
-  </div>
+  <!-- UI stays outside the AR scene -->
+  <div id="ui-overlay">
 
-  <div id="status" role="status">Starting MindAR...</div>
+    <div class="top-bar">
+      <a href="ar-cam.html">← Back</a>
 
-  <div class="ar-controls" id="ar-controls">
+      <button id="reset-model" type="button">
+        ↺ Reset
+      </button>
+    </div>
 
-    <button
-      id="controls-toggle"
-      class="controls-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="controls-body">
-      <span>3D Model Controls</span>
-      <span id="toggle-label">Show +</span>
-    </button>
+    <div id="status" role="status">
+      Starting MindAR...
+    </div>
 
-    <div class="controls-body" id="controls-body">
+    <div class="ar-controls collapsed" id="ar-controls">
 
-      <label class="gesture-row" for="gesture-toggle">
-        <span>Enable touch gestures</span>
-        <input id="gesture-toggle" type="checkbox" checked>
-      </label>
+      <button
+        id="controls-toggle"
+        class="controls-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="controls-body"
+      >
+        <span>3D Model Controls</span>
+        <span id="toggle-label">Show +</span>
+      </button>
 
-      <div class="control-tabs">
-        <button class="control-tab active"
-                data-tab="move" type="button">Move</button>
-        <button class="control-tab"
-                data-tab="rotate" type="button">Rotate</button>
-        <button class="control-tab"
-                data-tab="scale" type="button">Scale</button>
+      <div class="controls-body" id="controls-body">
+
+        <label class="gesture-row" for="gesture-toggle">
+          <span>Enable touch gestures</span>
+          <input
+            id="gesture-toggle"
+            type="checkbox"
+            checked
+          >
+        </label>
+
+        <div class="control-tabs">
+          <button
+            class="control-tab active"
+            data-tab="move"
+            type="button"
+          >
+            Move
+          </button>
+
+          <button
+            class="control-tab"
+            data-tab="rotate"
+            type="button"
+          >
+            Rotate
+          </button>
+
+          <button
+            class="control-tab"
+            data-tab="scale"
+            type="button"
+          >
+            Scale
+          </button>
+        </div>
+
+        <!-- Position controls -->
+        <div class="control-page" data-page="move">
+
+          <div class="control-row">
+            <label for="pos-x">Move X</label>
+
+            <input
+              id="pos-x"
+              type="range"
+              min="-2"
+              max="2"
+              step="0.01"
+              value="0.5"
+            >
+
+            <span class="control-value" id="pos-x-value">
+              0.50
+            </span>
+          </div>
+
+          <div class="control-row">
+            <label for="pos-y">Move Y</label>
+
+            <input
+              id="pos-y"
+              type="range"
+              min="-2"
+              max="2"
+              step="0.01"
+              value="0"
+            >
+
+            <span class="control-value" id="pos-y-value">
+              0.00
+            </span>
+          </div>
+
+          <div class="control-row">
+            <label for="pos-z">Move Z</label>
+
+            <input
+              id="pos-z"
+              type="range"
+              min="-2"
+              max="2"
+              step="0.01"
+              value="0"
+            >
+
+            <span class="control-value" id="pos-z-value">
+              0.00
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Rotation controls -->
+        <div
+          class="control-page"
+          data-page="rotate"
+          hidden
+        >
+
+          <div class="control-row">
+            <label for="rot-x">Rotate X</label>
+
+            <input
+              id="rot-x"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="90"
+            >
+
+            <span class="control-value" id="rot-x-value">
+              90°
+            </span>
+          </div>
+
+          <div class="control-row">
+            <label for="rot-y">Rotate Y</label>
+
+            <input
+              id="rot-y"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="0"
+            >
+
+            <span class="control-value" id="rot-y-value">
+              0°
+            </span>
+          </div>
+
+          <div class="control-row">
+            <label for="rot-z">Rotate Z</label>
+
+            <input
+              id="rot-z"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="0"
+            >
+
+            <span class="control-value" id="rot-z-value">
+              0°
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Scale control -->
+        <div
+          class="control-page"
+          data-page="scale"
+          hidden
+        >
+
+          <div class="control-row">
+            <label for="zoom-slider">Zoom</label>
+
+            <input
+              id="zoom-slider"
+              type="range"
+              min="0.3"
+              max="5"
+              step="0.01"
+              value="0.8"
+            >
+
+            <span class="control-value" id="zoom-value">
+              0.80×
+            </span>
+          </div>
+
+        </div>
+
+        <p class="hint">
+          1 finger: Rotate · 2 fingers: Move · Pinch: Zoom
+        </p>
+
       </div>
-
-      <div class="control-page" data-page="move">
-
-        <div class="control-row">
-          <label for="pos-x">Move X</label>
-          <input id="pos-x" type="range"
-                 min="-2" max="2" step="0.01" value="0.5">
-          <span class="control-value" id="pos-x-value">0.50</span>
-        </div>
-
-        <div class="control-row">
-          <label for="pos-y">Move Y</label>
-          <input id="pos-y" type="range"
-                 min="-2" max="2" step="0.01" value="0">
-          <span class="control-value" id="pos-y-value">0.00</span>
-        </div>
-
-        <div class="control-row">
-          <label for="pos-z">Move Z</label>
-          <input id="pos-z" type="range"
-                 min="-2" max="2" step="0.01" value="0">
-          <span class="control-value" id="pos-z-value">0.00</span>
-        </div>
-
-      </div>
-
-      <div class="control-page" data-page="rotate" hidden>
-
-        <div class="control-row">
-          <label for="rot-x">Rotate X</label>
-          <input id="rot-x" type="range"
-                 min="-180" max="180" step="1" value="90">
-          <span class="control-value" id="rot-x-value">90°</span>
-        </div>
-
-        <div class="control-row">
-          <label for="rot-y">Rotate Y</label>
-          <input id="rot-y" type="range"
-                 min="-180" max="180" step="1" value="0">
-          <span class="control-value" id="rot-y-value">0°</span>
-        </div>
-
-        <div class="control-row">
-          <label for="rot-z">Rotate Z</label>
-          <input id="rot-z" type="range"
-                 min="-180" max="180" step="1" value="0">
-          <span class="control-value" id="rot-z-value">0°</span>
-        </div>
-
-      </div>
-
-      <div class="control-page" data-page="scale" hidden>
-
-        <div class="control-row">
-          <label for="zoom-slider">Zoom</label>
-          <input id="zoom-slider" type="range"
-                 min="0.3" max="5" step="0.01" value="1">
-          <span class="control-value" id="zoom-value">1.00×</span>
-        </div>
-
-      </div>
-
-      <p class="hint">
-        1 finger: Rotate · 2 fingers: Move · Pinch: Zoom
-      </p>
-
     </div>
   </div>
 
+  <!-- MindAR scene: leave its camera sizing to MindAR -->
   <a-scene
     mindar-image="
       imageTargetSrc: nft/mosque.mind;
@@ -311,62 +500,175 @@
     embedded
     renderer="colorManagement: true"
     vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+    device-orientation-permission-ui="enabled: false"
+  >
 
-    <a-camera position="0 0 0" look-controls="enabled: false">
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false"
+    >
     </a-camera>
 
-    <a-entity id="image-target"
-              mindar-image-target="targetIndex: 0">
+    <a-entity
+      id="image-target"
+      mindar-image-target="targetIndex: 0"
+    >
 
       <a-entity
         id="mosque-model"
         gltf-model="url(models/mosque.glb)"
         position="0.5 0 0"
         rotation="90 0 0"
-        scale="0.1 0.1 0.1">
+        scale="0.08 0.08 0.08"
+      >
       </a-entity>
 
     </a-entity>
+
   </a-scene>
 
   <script>
     'use strict';
+
+    // ==============================
+    // Elements
+    // ==============================
 
     const status = document.getElementById('status');
     const scene = document.querySelector('a-scene');
     const target = document.getElementById('image-target');
     const model = document.getElementById('mosque-model');
 
+    const uiOverlay = document.getElementById('ui-overlay');
+    const controls = document.getElementById('ar-controls');
+    const toggle = document.getElementById('controls-toggle');
+    const toggleLabel = document.getElementById('toggle-label');
+    const gestureToggle = document.getElementById('gesture-toggle');
+
+    // ==============================
+    // Visible viewport fix
+    // ==============================
+
+    /*
+      On some mobile browsers, the visual viewport
+      changes after the camera initializes.
+
+      This updates only the UI overlay dimensions.
+      It does not resize MindAR's canvas or video.
+    */
+
+    function updateUIViewport() {
+      const viewport = window.visualViewport;
+
+      if (viewport) {
+        uiOverlay.style.top = viewport.offsetTop + 'px';
+        uiOverlay.style.left = viewport.offsetLeft + 'px';
+        uiOverlay.style.width = viewport.width + 'px';
+        uiOverlay.style.height = viewport.height + 'px';
+      } else {
+        uiOverlay.style.top = '0px';
+        uiOverlay.style.left = '0px';
+        uiOverlay.style.width = window.innerWidth + 'px';
+        uiOverlay.style.height = window.innerHeight + 'px';
+      }
+    }
+
+    updateUIViewport();
+
+    window.addEventListener('resize', updateUIViewport);
+    window.addEventListener('orientationchange', updateUIViewport);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener(
+        'resize',
+        updateUIViewport
+      );
+
+      window.visualViewport.addEventListener(
+        'scroll',
+        updateUIViewport
+      );
+    }
+
+    // ==============================
+    // Model loading and tracking
+    // ==============================
+
     let modelReady = false;
     let trackingActive = false;
+    let cameraReady = false;
+    let modelError = false;
 
     function updateLoadingStatus() {
-    if (!modelReady) {
+      if (modelError) {
+        status.textContent = 'Failed to load mosque.glb';
+        status.style.background = 'rgba(180, 40, 30, 0.85)';
+        return;
+      }
+
+      if (!modelReady) {
         status.textContent = 'Loading 3D mosque model...';
         status.style.background = 'rgba(0, 0, 0, 0.8)';
-    } else if (trackingActive) {
+      } else if (trackingActive) {
         status.textContent = 'TRACKING ACTIVE — Mosque visible';
         status.style.background = 'rgba(0, 110, 50, 0.85)';
-    } else {
+      } else if (cameraReady) {
         status.textContent = 'Model ready — scan the mosque image';
         status.style.background = 'rgba(0, 0, 0, 0.75)';
-    }
+      } else {
+        status.textContent = 'Starting AR camera...';
+        status.style.background = 'rgba(0, 0, 0, 0.75)';
+      }
     }
 
     model.addEventListener('model-loaded', () => {
-    modelReady = true;
-    updateLoadingStatus();
+      modelReady = true;
+      updateLoadingStatus();
     });
 
     model.addEventListener('model-error', () => {
-    status.textContent = 'Failed to load mosque.glb';
-    status.style.background = 'rgba(180, 40, 30, 0.85)';
+      modelError = true;
+      updateLoadingStatus();
     });
 
+    scene.addEventListener('arReady', () => {
+      cameraReady = true;
+      updateLoadingStatus();
+      updateUIViewport();
+    });
+
+    scene.addEventListener('arError', () => {
+      status.textContent =
+        'MindAR error — check camera permission and target file';
+
+      status.style.background = 'rgba(180, 40, 30, 0.85)';
+    });
+
+    target.addEventListener('targetFound', () => {
+      trackingActive = true;
+      updateLoadingStatus();
+    });
+
+    target.addEventListener('targetLost', () => {
+      trackingActive = false;
+      updateLoadingStatus();
+    });
+
+    window.addEventListener('error', event => {
+      status.textContent = 'Error: ' + event.message;
+    });
+
+    // ==============================
+    // Model transform defaults
+    // ==============================
+
     const DEFAULTS = {
-      px: 0.5, py: 0, pz: 0,
-      rx: 90, ry: 0, rz: 0,
+      px: 0.5,
+      py: 0,
+      pz: 0,
+      rx: 90,
+      ry: 0,
+      rz: 0,
       zoom: 0.8
     };
 
@@ -390,36 +692,17 @@
 
     Object.entries(sliderIds).forEach(([key, id]) => {
       sliders[key] = document.getElementById(id);
+
       values[key] = document.getElementById(
-        key === 'zoom' ? 'zoom-value' : id + '-value'
+        key === 'zoom'
+          ? 'zoom-value'
+          : id + '-value'
       );
     });
 
-    // ===== MindAR Events =====
-
-    scene.addEventListener('arReady', () => {
-      status.textContent = 'Camera ready — scan the reference image';
-    });
-
-    scene.addEventListener('arError', () => {
-      status.textContent = 'MindAR error — check camera permission';
-    });
-
-    target.addEventListener('targetFound', () => {
-        trackingActive = true;
-        updateLoadingStatus();
-    });
-
-    target.addEventListener('targetLost', () => {
-        trackingActive = false;
-        updateLoadingStatus();
-    });
-
-    window.addEventListener('error', event => {
-      status.textContent = 'Error: ' + event.message;
-    });
-
-    // ===== Transform State =====
+    // ==============================
+    // Transform functions
+    // ==============================
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
@@ -430,7 +713,11 @@
     }
 
     function updateModel() {
-      model.object3D.position.set(state.px, state.py, state.pz);
+      model.object3D.position.set(
+        state.px,
+        state.py,
+        state.pz
+      );
 
       model.object3D.rotation.set(
         THREE.MathUtils.degToRad(state.rx),
@@ -439,12 +726,15 @@
         'XYZ'
       );
 
-      model.object3D.scale.setScalar(BASE_SCALE * state.zoom);
+      model.object3D.scale.setScalar(
+        BASE_SCALE * state.zoom
+      );
 
       Object.keys(sliders).forEach(key => {
         sliders[key].value = state[key];
 
         const value = state[key];
+
         values[key].textContent =
           key === 'zoom'
             ? value.toFixed(2) + '×'
@@ -454,7 +744,9 @@
       });
     }
 
-    // ===== Sliders =====
+    // ==============================
+    // Sliders
+    // ==============================
 
     Object.entries(sliders).forEach(([key, slider]) => {
       slider.addEventListener('input', () => {
@@ -463,9 +755,9 @@
       });
     });
 
-    // ===== Touch Gestures =====
-
-    const gestureToggle = document.getElementById('gesture-toggle');
+    // ==============================
+    // Touch gestures
+    // ==============================
 
     let previousTouches = [];
     let gestureMode = null;
@@ -485,86 +777,130 @@
     }
 
     function distance(a, b) {
-      return Math.hypot(a.x - b.x, a.y - b.y);
+      return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
+      );
     }
 
     function isControlTarget(target) {
       return target instanceof Element &&
-        !!target.closest('.ar-controls, .top-bar');
+        !!target.closest('#ui-overlay');
     }
 
     document.addEventListener('touchstart', event => {
-      if (!gestureToggle.checked || isControlTarget(event.target)) {
+      if (
+        !gestureToggle.checked ||
+        isControlTarget(event.target)
+      ) {
         previousTouches = [];
         gestureMode = null;
         return;
       }
 
       previousTouches = getTouches(event);
-      gestureMode = previousTouches.length === 1
-        ? 'rotate'
-        : previousTouches.length === 2
-          ? 'panzoom'
-          : null;
+
+      gestureMode =
+        previousTouches.length === 1
+          ? 'rotate'
+          : previousTouches.length === 2
+            ? 'panzoom'
+            : null;
     }, { passive: true });
 
     document.addEventListener('touchmove', event => {
-      if (!gestureToggle.checked || isControlTarget(event.target)) {
+      if (
+        !gestureToggle.checked ||
+        isControlTarget(event.target)
+      ) {
         return;
       }
 
       const currentTouches = getTouches(event);
 
-      if (currentTouches.length !== previousTouches.length) {
+      if (
+        currentTouches.length !== previousTouches.length
+      ) {
         previousTouches = currentTouches;
         return;
       }
 
-      if (currentTouches.length === 1 && gestureMode === 'rotate') {
-        if (event.cancelable) event.preventDefault();
+      // One finger: rotate
+      if (
+        currentTouches.length === 1 &&
+        gestureMode === 'rotate'
+      ) {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
 
-        const dx = currentTouches[0].x - previousTouches[0].x;
-        const dy = currentTouches[0].y - previousTouches[0].y;
+        const dx =
+          currentTouches[0].x - previousTouches[0].x;
 
-        // Horizontal swipe: rotate around Y
-        state.ry = wrapDegrees(state.ry + dx * 0.45);
+        const dy =
+          currentTouches[0].y - previousTouches[0].y;
 
-        // Vertical swipe: tilt around X
-        state.rx = clamp(state.rx + dy * 0.35, -180, 180);
+        state.ry = wrapDegrees(
+          state.ry + dx * 0.45
+        );
+
+        state.rx = clamp(
+          state.rx + dy * 0.35,
+          -180,
+          180
+        );
 
         updateModel();
       }
 
-      if (currentTouches.length === 2 && gestureMode === 'panzoom') {
-        if (event.cancelable) event.preventDefault();
+      // Two fingers: move and zoom
+      if (
+        currentTouches.length === 2 &&
+        gestureMode === 'panzoom'
+      ) {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
 
         const previousMid = midpoint(
-          previousTouches[0], previousTouches[1]
+          previousTouches[0],
+          previousTouches[1]
         );
 
         const currentMid = midpoint(
-          currentTouches[0], currentTouches[1]
+          currentTouches[0],
+          currentTouches[1]
         );
 
         const dx = currentMid.x - previousMid.x;
         const dy = currentMid.y - previousMid.y;
 
-        // Move in the tracked image's X/Y coordinates.
-        // Screen-relative approximation for testing.
-        state.px = clamp(state.px + dx * 0.002, -2, 2);
-        state.py = clamp(state.py - dy * 0.002, -2, 2);
+        state.px = clamp(
+          state.px + dx * 0.002,
+          -2,
+          2
+        );
+
+        state.py = clamp(
+          state.py - dy * 0.002,
+          -2,
+          2
+        );
 
         const previousDistance = distance(
-          previousTouches[0], previousTouches[1]
+          previousTouches[0],
+          previousTouches[1]
         );
 
         const currentDistance = distance(
-          currentTouches[0], currentTouches[1]
+          currentTouches[0],
+          currentTouches[1]
         );
 
         if (previousDistance > 0) {
           state.zoom = clamp(
-            state.zoom * currentDistance / previousDistance,
+            state.zoom *
+              currentDistance / previousDistance,
             MIN_ZOOM,
             MAX_ZOOM
           );
@@ -578,11 +914,13 @@
 
     document.addEventListener('touchend', event => {
       previousTouches = getTouches(event);
-      gestureMode = previousTouches.length === 1
-        ? 'rotate'
-        : previousTouches.length === 2
-          ? 'panzoom'
-          : null;
+
+      gestureMode =
+        previousTouches.length === 1
+          ? 'rotate'
+          : previousTouches.length === 2
+            ? 'panzoom'
+            : null;
     });
 
     document.addEventListener('touchcancel', () => {
@@ -595,49 +933,69 @@
       gestureMode = null;
     });
 
-    // ===== Reset =====
+    // ==============================
+    // Reset
+    // ==============================
 
-    document.getElementById('reset-model')
+    document
+      .getElementById('reset-model')
       .addEventListener('click', () => {
         Object.assign(state, DEFAULTS);
         updateModel();
       });
 
-    // ===== Tabs =====
+    // ==============================
+    // Control tabs
+    // ==============================
 
-    document.querySelectorAll('.control-tab').forEach(button => {
-      button.addEventListener('click', () => {
-        const selected = button.dataset.tab;
+    document
+      .querySelectorAll('.control-tab')
+      .forEach(button => {
+        button.addEventListener('click', () => {
+          const selected = button.dataset.tab;
 
-        document.querySelectorAll('.control-tab').forEach(tab => {
-          tab.classList.toggle(
-            'active',
-            tab.dataset.tab === selected
-          );
-        });
+          document
+            .querySelectorAll('.control-tab')
+            .forEach(tab => {
+              tab.classList.toggle(
+                'active',
+                tab.dataset.tab === selected
+              );
+            });
 
-        document.querySelectorAll('.control-page').forEach(page => {
-          page.hidden = page.dataset.page !== selected;
+          document
+            .querySelectorAll('.control-page')
+            .forEach(page => {
+              page.hidden =
+                page.dataset.page !== selected;
+            });
         });
       });
-    });
 
-    // ===== Collapse =====
-
-    const controls = document.getElementById('ar-controls');
-    const toggle = document.getElementById('controls-toggle');
-    const toggleLabel = document.getElementById('toggle-label');
-
-    controls.classList.add('collapsed');
+    // ==============================
+    // Collapse / expand controls
+    // ==============================
 
     toggle.addEventListener('click', () => {
-      const collapsed = controls.classList.toggle('collapsed');
+      const collapsed =
+        controls.classList.toggle('collapsed');
 
-      toggle.setAttribute('aria-expanded', String(!collapsed));
-      toggleLabel.textContent = collapsed ? 'Show +' : 'Hide −';
+      toggle.setAttribute(
+        'aria-expanded',
+        String(!collapsed)
+      );
+
+      toggleLabel.textContent =
+        collapsed ? 'Show +' : 'Hide −';
     });
 
+    // ==============================
+    // Initialize
+    // ==============================
+
     updateModel();
+    updateLoadingStatus();
   </script>
+
 </body>
 </html>
