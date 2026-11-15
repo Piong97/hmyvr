@@ -496,6 +496,7 @@
       filterBeta: 0.001;
       warmupTolerance: 3;
       missTolerance: 10;
+      maxTrack: 2;
     "
     embedded
     renderer="colorManagement: true"
@@ -510,7 +511,7 @@
     </a-camera>
 
     <a-entity
-      id="image-target"
+      id="image-target-0"
       mindar-image-target="targetIndex: 0"
     >
 
@@ -525,6 +526,12 @@
 
     </a-entity>
 
+    <!-- Second target uses the same loaded mosque model -->
+    <a-entity
+      id="image-target-1"
+      mindar-image-target="targetIndex: 1"
+    ></a-entity>
+
   </a-scene>
 
   <script>
@@ -536,7 +543,8 @@
 
     const status = document.getElementById('status');
     const scene = document.querySelector('a-scene');
-    const target = document.getElementById('image-target');
+    const target0 = document.getElementById('image-target-0');
+    const target1 = document.getElementById('image-target-1');
     const model = document.getElementById('mosque-model');
 
     const uiOverlay = document.getElementById('ui-overlay');
@@ -595,6 +603,8 @@
     // ==============================
 
     let modelReady = false;
+    const targetVisible = [false, false];
+    let activeTargetIndex = 0;
     let trackingActive = false;
     let cameraReady = false;
     let modelError = false;
@@ -613,7 +623,7 @@
         status.textContent = 'TRACKING ACTIVE — Mosque visible';
         status.style.background = 'rgba(0, 110, 50, 0.85)';
       } else if (cameraReady) {
-        status.textContent = 'Model ready — scan the mosque image';
+        status.textContent = 'Model ready — scan either mosque image';
         status.style.background = 'rgba(0, 0, 0, 0.75)';
       } else {
         status.textContent = 'Starting AR camera...';
@@ -644,14 +654,51 @@
       status.style.background = 'rgba(180, 40, 30, 0.85)';
     });
 
-    target.addEventListener('targetFound', () => {
-      trackingActive = true;
+    // Keep the A-Frame model entity and its GLB component intact.
+    // Only reparent its existing Three.js object to the active anchor.
+    // This avoids removing/recreating the model entity or reloading the GLB.
+    function refreshTrackedTarget() {
+      let nextIndex = -1;
+
+      // Prefer the currently active image while it is still tracked.
+      if (targetVisible[activeTargetIndex]) {
+        nextIndex = activeTargetIndex;
+      } else if (targetVisible[0]) {
+        nextIndex = 0;
+      } else if (targetVisible[1]) {
+        nextIndex = 1;
+      }
+
+      trackingActive = nextIndex !== -1;
+
+      if (trackingActive && nextIndex !== activeTargetIndex) {
+        const nextAnchor = nextIndex === 0 ? target0 : target1;
+        // add() preserves local position, rotation and scale.
+        nextAnchor.object3D.add(model.object3D);
+        activeTargetIndex = nextIndex;
+      }
+
       updateLoadingStatus();
+    }
+
+    target0.addEventListener('targetFound', () => {
+      targetVisible[0] = true;
+      refreshTrackedTarget();
     });
 
-    target.addEventListener('targetLost', () => {
-      trackingActive = false;
-      updateLoadingStatus();
+    target0.addEventListener('targetLost', () => {
+      targetVisible[0] = false;
+      refreshTrackedTarget();
+    });
+
+    target1.addEventListener('targetFound', () => {
+      targetVisible[1] = true;
+      refreshTrackedTarget();
+    });
+
+    target1.addEventListener('targetLost', () => {
+      targetVisible[1] = false;
+      refreshTrackedTarget();
     });
 
     window.addEventListener('error', event => {
@@ -664,7 +711,7 @@
 
     const DEFAULTS = {
       px: 0.5,
-      py: 0,
+      py: -0.6,
       pz: 0,
       rx: 90,
       ry: 0,
