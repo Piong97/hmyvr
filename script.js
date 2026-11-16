@@ -217,7 +217,7 @@ const ANNOTATIONS = {
   },
 
   geometry: {
-    title: "Geometry",
+    title: "Geometric Patterns",
     description:
       "Geometric patterns are an important element of Islamic architectural design. Discover how repeating shapes, symmetry, and carefully arranged lines create visual harmony throughout the mosque's decorative features.",
     image: "assets/annotation/4.png",
