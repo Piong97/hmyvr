@@ -61,8 +61,8 @@ const stories = [
     bm: 'assets/video/BM_Kali.mp4'
   },
   {
-    titleEn: 'Geometry',
-    titleBm: 'Geometri',
+    titleEn: 'Geometric Patterns',
+    titleBm: 'Corak Geometri',
     posterEn: 'assets/poster/8.png',
     posterBm: 'assets/poster/9.png',
     en: 'assets/video/EN_Geo.mp4',
